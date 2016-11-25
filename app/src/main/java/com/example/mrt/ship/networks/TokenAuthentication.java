@@ -1,4 +1,4 @@
-package com.example.mrt.ship.sync;
+package com.example.mrt.ship.networks;
 
 /**
  * Created by mrt on 26/10/2016.

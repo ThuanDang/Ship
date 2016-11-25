@@ -170,8 +170,7 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
         // clear and add
-        this.data.clear();
-        this.data.addAll(orders);
+        this.data = orders;
 
         diffResult.dispatchUpdatesTo(this); // calls adapter's notify methods after diff is computed
     }

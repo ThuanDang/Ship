@@ -12,7 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +21,15 @@ import android.widget.ProgressBar;
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.RcvOrdersAdapter;
 import com.example.mrt.ship.models.Order;
-import com.example.mrt.ship.preferences.EndlessRecyclerViewScrollerListener;
-import com.example.mrt.ship.preferences.HideScrollListener;
-import com.example.mrt.ship.preferences.OnFragmentOrdersListener;
+import com.example.mrt.ship.interfaces.EndlessRecyclerViewScrollerListener;
+import com.example.mrt.ship.interfaces.HideScrollListener;
+import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
+import com.example.mrt.ship.preferences.ItemTouchHelperCallback;
 import com.example.mrt.ship.preferences.SpacesItemDecoration;
-import com.example.mrt.ship.sync.ApiInterface;
-import com.example.mrt.ship.sync.GetJson;
-import com.example.mrt.ship.utils.ApiUtils;
+import com.example.mrt.ship.networks.ApiInterface;
+import com.example.mrt.ship.networks.GetJson;
+import com.example.mrt.ship.networks.RESTfulApi;
+import com.example.mrt.ship.preferences.SpacesItemDecorationPaddingTop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ public class OrdersFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         data = new ArrayList<>();
-        api = ApiUtils.getApi();
+        api = RESTfulApi.getApi();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString("token", "");
     }
@@ -148,13 +150,20 @@ public class OrdersFragment extends Fragment {
 
 //----------------------------------------------------------------------------------------------
     public void setRecyclerView(){
-        adapter = new RcvOrdersAdapter(getContext(), data);
+        adapter = new RcvOrdersAdapter(getContext(), data, swipeContainer);
         rvOrderList.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvOrderList.setLayoutManager(linearLayoutManager);
         rvOrderList.setHasFixedSize(true);
-        rvOrderList.addItemDecoration(new SpacesItemDecoration(10));
+
+        rvOrderList.addItemDecoration(
+                new SpacesItemDecorationPaddingTop(getContext(),10, 48));
+
+        ItemTouchHelper.Callback callback =
+                new ItemTouchHelperCallback(adapter, getContext());
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(rvOrderList);
 
         // set hide tab
         rvOrderList.addOnScrollListener(new HideScrollListener() {
@@ -262,6 +271,7 @@ public class OrdersFragment extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+        swipeContainer.setProgressViewOffset(false, 40, 150);
     }
 //------------------------------------------------------------------------------
 

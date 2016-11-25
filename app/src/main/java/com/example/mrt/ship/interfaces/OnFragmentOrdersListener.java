@@ -1,4 +1,4 @@
-package com.example.mrt.ship.preferences;
+package com.example.mrt.ship.interfaces;
 
 /**
  * Created by mrt on 27/10/2016.

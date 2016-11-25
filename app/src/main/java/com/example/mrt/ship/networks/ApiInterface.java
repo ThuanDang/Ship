@@ -1,4 +1,4 @@
-package com.example.mrt.ship.sync;
+package com.example.mrt.ship.networks;
 
 import com.example.mrt.ship.models.Order;
 

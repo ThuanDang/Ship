@@ -1,6 +1,4 @@
-package com.example.mrt.ship.utils;
-
-import com.example.mrt.ship.sync.ApiInterface;
+package com.example.mrt.ship.networks;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -9,9 +7,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by mrt on 26/10/2016.
  */
 
-public class ApiUtils {
+public class RESTfulApi {
 
-    public static String baseUrl = "http://192.168.43.170:8000";
+    private static String baseUrl = "http://192.168.0.108";
     private static ApiInterface instance = null;
 
     public static ApiInterface getApi(){

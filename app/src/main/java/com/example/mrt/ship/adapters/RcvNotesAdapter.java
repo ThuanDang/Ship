@@ -151,8 +151,7 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
         // clear and add
-        this.data.clear();
-        this.data.addAll(notes);
+        this.data = notes;
 
         diffResult.dispatchUpdatesTo(this); // calls adapter's notify methods after diff is computed
     }

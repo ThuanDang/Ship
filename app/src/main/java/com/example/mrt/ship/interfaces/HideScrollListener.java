@@ -1,4 +1,4 @@
-package com.example.mrt.ship.preferences;
+package com.example.mrt.ship.interfaces;
 
 import android.support.v7.widget.RecyclerView;
 

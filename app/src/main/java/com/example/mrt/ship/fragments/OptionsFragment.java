@@ -20,9 +20,9 @@ import com.example.mrt.ship.R;
 import com.example.mrt.ship.activities.LoginActivity;
 import com.example.mrt.ship.activities.NoteActivity;
 import com.example.mrt.ship.adapters.RcvOptionsAdapter;
-import com.example.mrt.ship.preferences.HideScrollListener;
-import com.example.mrt.ship.preferences.OnFragmentOptionsScrollListener;
-import com.example.mrt.ship.preferences.OnFragmentOrdersListener;
+import com.example.mrt.ship.interfaces.HideScrollListener;
+import com.example.mrt.ship.interfaces.OnFragmentOptionsScrollListener;
+import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 
 /**
  * Created by mrt on 22/11/2016.

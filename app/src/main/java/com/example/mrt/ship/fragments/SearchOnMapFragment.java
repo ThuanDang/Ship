@@ -19,9 +19,9 @@ import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.CustomWindowAdapter;
 import com.example.mrt.ship.models.Location;
 import com.example.mrt.ship.models.Order;
-import com.example.mrt.ship.preferences.OnFragmentMapListener;
-import com.example.mrt.ship.sync.ApiInterface;
-import com.example.mrt.ship.utils.ApiUtils;
+import com.example.mrt.ship.interfaces.OnFragmentMapListener;
+import com.example.mrt.ship.networks.ApiInterface;
+import com.example.mrt.ship.networks.RESTfulApi;
 import com.example.mrt.ship.utils.MapUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,7 +60,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api = ApiUtils.getApi();
+        api = RESTfulApi.getApi();
         token = PreferenceManager.getDefaultSharedPreferences(getContext())
                 .getString("token", "");
     }

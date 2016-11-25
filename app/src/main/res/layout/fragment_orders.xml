@@ -18,7 +18,7 @@
         <include
             layout="@layout/error_form"/>
 
-        <android.support.v7.widget.RecyclerView
+        <com.example.mrt.ship.preferences.FixedRecyclerView
             android:id="@+id/list_order"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

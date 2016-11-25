@@ -24,9 +24,9 @@ import android.widget.TextView;
 
 
 import com.example.mrt.ship.R;
-import com.example.mrt.ship.sync.ApiInterface;
-import com.example.mrt.ship.sync.TokenAuthentication;
-import com.example.mrt.ship.utils.ApiUtils;
+import com.example.mrt.ship.networks.ApiInterface;
+import com.example.mrt.ship.networks.TokenAuthentication;
+import com.example.mrt.ship.networks.RESTfulApi;
 import com.example.mrt.ship.utils.FontUtils;
 import com.example.mrt.ship.utils.ValidationUtils;
 
@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        api = ApiUtils.getApi();
+        api = RESTfulApi.getApi();
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 

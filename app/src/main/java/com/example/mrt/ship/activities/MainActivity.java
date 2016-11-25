@@ -13,9 +13,9 @@ import android.widget.TextView;
 
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.PagerAdapter;
-import com.example.mrt.ship.preferences.OnFragmentMapListener;
-import com.example.mrt.ship.preferences.OnFragmentOptionsScrollListener;
-import com.example.mrt.ship.preferences.OnFragmentOrdersListener;
+import com.example.mrt.ship.interfaces.OnFragmentMapListener;
+import com.example.mrt.ship.interfaces.OnFragmentOptionsScrollListener;
+import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 
 
 public class MainActivity extends AppCompatActivity implements

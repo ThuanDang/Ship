@@ -8,17 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.mrt.ship.R;
-import com.example.mrt.ship.sync.ApiInterface;
-import com.example.mrt.ship.sync.GetJson;
-import com.example.mrt.ship.utils.ApiUtils;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.mrt.ship.networks.ApiInterface;
+import com.example.mrt.ship.networks.RESTfulApi;
 
 /**
  * Created by mrt on 11/10/2016.
@@ -43,7 +36,7 @@ public class ReceivedOrdersFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
-        api = ApiUtils.getApi();
+        api = RESTfulApi.getApi();
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString("token", "");
     }
