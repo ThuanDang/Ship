@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/top_view"
+        android:orientation="vertical"
+        android:elevation="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include
+            layout="@layout/search_form"/>
+        <include
+            layout="@layout/title_form"/>
+        <!--<TextView
+            android:id="@+id/title"
+            android:background="@color/title_background_color"
+            android:textColor="@color/black_text"
+            android:fontFamily="sans-serif-light"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />-->
+        <View
+            android:background="@drawable/shadow2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+    </LinearLayout>
+
+
+    <com.example.mrt.ship.preferences.NonSwipeViewPager
+        android:id="@+id/viewpager"
+        android:layout_marginTop="48dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Tab form -->
+    <LinearLayout
+        android:id="@+id/tab_layout_form"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:background="@drawable/shadow"
+            android:layout_width="match_parent"
+            android:layout_height="1dp" />
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            app:tabMaxWidth="0dp"
+            android:layout_height="48dp"
+            app:tabIndicatorHeight="0.0dip"
+            app:tabBackground="@drawable/ripple_tab"
+            app:tabGravity="fill"
+            app:tabMode="fixed" />
+    </LinearLayout>
+</RelativeLayout>

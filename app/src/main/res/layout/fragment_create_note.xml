@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <EditText
+        android:layout_marginTop="8dp"
+        android:id="@+id/cr_note_header"
+        android:hint="Tiêu đề"
+        android:maxLines="1"
+        android:inputType="textNoSuggestions|textCapWords"
+        android:imeOptions="actionNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/cr_note_content"
+        android:scrollbars="vertical"
+        android:hint="Nội dung"
+        android:layout_marginTop="8dp"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="250dp" />
+    <Button
+        android:id="@+id/btn_save_note"
+        android:textColor="#ffffff"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:text="@string/btn_save_note"
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
+
+</LinearLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_orders"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/progress_orders"
+            android:indeterminateDrawable="@drawable/progress"
+            android:layout_gravity="center"
+            android:layout_height="24dp"
+            android:layout_width="24dp" />
+
+        <include
+            layout="@layout/error_form"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+</android.support.v4.widget.SwipeRefreshLayout>

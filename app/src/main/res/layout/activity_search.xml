@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.mrt.ship.activities.SearchActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_search"
+        android:elevation="2dp"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <RelativeLayout
+
+            android:paddingEnd="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <ImageView
+                android:id="@+id/a"
+                android:src="@drawable/ic_search"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/search_input"
+                android:imeOptions="actionSearch"
+                android:layout_toEndOf="@+id/a"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:fontFamily="sans-serif-light"
+                android:inputType="textNoSuggestions"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:maxLines="1"
+                android:hint="@string/search"
+                android:textColorHint="@color/icon_light_inactive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <View
+                android:layout_below="@+id/a"
+                android:background="@color/icon_light_inactive"
+                android:layout_marginTop="6dp"
+                android:layout_height="1dp"
+                android:layout_width="match_parent"/>
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/progress_search"
+        android:indeterminateDrawable="@drawable/progress"
+        android:layout_gravity="center"
+        android:layout_height="24dp"
+        android:layout_width="24dp" />
+
+    <include
+        layout="@layout/error_form"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</FrameLayout>

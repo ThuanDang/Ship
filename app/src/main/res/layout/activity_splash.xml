@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/splash_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SplashActivity">
+
+        <com.jrummyapps.android.widget.AnimatedSvgView
+            android:id="@+id/animated_svg_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="25dp"
+            app:animatedSvgFillColors="@array/svg_colors"
+            app:animatedSvgFillStart="810"
+            app:animatedSvgFillTime="800"
+            app:animatedSvgGlyphStrings="@array/svg_strings"
+            app:animatedSvgImageSizeX="150"
+            app:animatedSvgImageSizeY="110"
+            app:animatedSvgTraceTime="1640"
+            app:animatedSvgTraceTimePerGlyph="820"
+            app:animatedSvgTraceColors="@array/svg_colors"/>
+
+</FrameLayout>

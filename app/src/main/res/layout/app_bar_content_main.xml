@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--<android.support.design.widget.AppBarLayout
+        app:theme="@style/AppTheme.AppBarOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:background="?colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize">
+           <TextView
+                android:id="@+id/title_fragment"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textColor="@color/app_name_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout 
+        android:layout_width="match_parent" 
+        android:layout_height="match_parent" 
+        android:layout_marginTop="?actionBarSize">
+        <com.example.mrt.ship.preferences.NonSwipeViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent" 
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:id="@+id/tab_layout_form"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:background="@drawable/shadow"
+                android:layout_width="match_parent"
+                android:layout_height="4dp" />
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:background="@color/tab_background"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:tabIndicatorHeight="0.0dip"
+                app:tabBackground="?selectableItemBackground"
+                app:tabMode="fixed" />
+        </LinearLayout>
+
+    </RelativeLayout>-->
+</FrameLayout>
