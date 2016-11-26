@@ -5,5 +5,5 @@ package com.example.mrt.ship.interfaces;
  */
 
 public interface OnFragmentMapListener {
-    void countInMap(int n);
+    void countOrders(int n, int page);
 }

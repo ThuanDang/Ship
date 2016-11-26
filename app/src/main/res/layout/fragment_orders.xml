@@ -4,25 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ProgressBar
-            android:visibility="gone"
-            android:id="@+id/progress_orders"
-            android:indeterminateDrawable="@drawable/progress"
-            android:layout_gravity="center"
-            android:layout_height="24dp"
-            android:layout_width="24dp" />
-
-        <include
-            layout="@layout/error_form"/>
-
-        <com.example.mrt.ship.preferences.FixedRecyclerView
-            android:id="@+id/list_order"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </FrameLayout>
-
+    <include
+        layout="@layout/form_list"/>
 </android.support.v4.widget.SwipeRefreshLayout>

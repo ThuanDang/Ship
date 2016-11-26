@@ -20,25 +20,35 @@ import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     private final ItemTouchHelperAdapter mAdapter;
-    private Paint p = new Paint();
+    private Paint p;
     private Context context;
-    private boolean first = false;
+    private boolean swipe;
+    private boolean drag;
 
 
-    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter, Context context) {
+    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter,
+                                   Context context,
+                                   boolean swipe,
+                                   boolean drag) {
         mAdapter = adapter;
         this.context = context;
-        p.setARGB(255, 121, 85, 72);
+        this.drag = drag;
+        this.swipe = swipe;
+        if(swipe){
+            p = new Paint();
+            p.setARGB(255, 121, 85, 72);
+        }
+
     }
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return false;
+        return drag;
     }
 
     @Override
     public boolean isItemViewSwipeEnabled() {
-        return true;
+        return swipe;
     }
 
     @Override

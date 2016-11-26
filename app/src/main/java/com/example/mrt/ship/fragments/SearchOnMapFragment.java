@@ -155,7 +155,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                         showError();
                     }else {
                         if(data != null){
-                            mListener.countInMap(data.size());
+                            mListener.countOrders(data.size(), 2);
                             map.clear();
                             handler.postDelayed(new Runnable() {
                                 @Override

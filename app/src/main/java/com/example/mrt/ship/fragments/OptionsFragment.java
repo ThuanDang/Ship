@@ -21,7 +21,7 @@ import com.example.mrt.ship.activities.LoginActivity;
 import com.example.mrt.ship.activities.NoteActivity;
 import com.example.mrt.ship.adapters.RcvOptionsAdapter;
 import com.example.mrt.ship.interfaces.HideScrollListener;
-import com.example.mrt.ship.interfaces.OnFragmentOptionsScrollListener;
+import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 
 /**
@@ -29,7 +29,7 @@ import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
  */
 
 public class OptionsFragment extends Fragment{
-    private OnFragmentOptionsScrollListener mListener;
+    private OnFragmentOptionsListener mListener;
     private RcvOptionsAdapter adapter;
     private RecyclerView listOptions;
     private ImageView avatar;
@@ -63,7 +63,7 @@ public class OptionsFragment extends Fragment{
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentOrdersListener) {
-            mListener = (OnFragmentOptionsScrollListener) context;
+            mListener = (OnFragmentOptionsListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentOrdersListener");

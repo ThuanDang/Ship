@@ -28,7 +28,7 @@
     <string name="connect_error_title">Lỗi kết nối</string>
     <string name="connect_error_message">Rất tiếc không thể kết nối tới máy chủ,
         xin vui lòng kiểm ra lại kết nối internet của bạn.</string>
-    <string name="received">Đã nhận</string>
+    <string name="complete">Hoàn thành</string>
     <string name="plan">Lịch trình</string>
 
 

@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.mrt.ship.R;
+import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.preferences.OrdersDiffCallback;
 import com.example.mrt.ship.utils.FormatUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -23,50 +25,49 @@ import java.util.Random;
  */
 
 // Create adapter extends RecyclerView.Adapter with specific ViewHolder
-public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+implements ItemTouchHelperAdapter{
     private List<Order> data;
     private Context context;
-    // Interface click item
+
     private static OnItemClickListener item_listener;
-    public interface OnItemClickListener{
-        void onItemOrderClick(View itemView, int position);
-        void onItemErrorClick(View itemView, int position);
-    }
-    // Set listener method
-    public void setOnItemClickListener(OnItemClickListener listener){
-        this.item_listener = listener;
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(data, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(data, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
     }
 
+    @Override
+    public void onItemDismiss(int position) {
+
+    }
+
+    @Override
+    public void onItemDrag(boolean x) {
+
+    }
+
+    public interface OnItemClickListener{
+        void onItemClick(View itemView, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        item_listener = listener;
+    }
 
     // constructor
     public RcvReceivedAdapter(Context context, List<Order> data){
         this.context = context;
         this.data = data;
-    }
-
-    private static class ProgressVH extends RecyclerView.ViewHolder{
-
-        ProgressVH(View itemView) {
-            super(itemView);
-        }
-    }
-
-    private static class ErrorVH extends RecyclerView.ViewHolder{
-
-        ErrorVH(final View itemView) {
-            super(itemView);
-            // Setup the click listener
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (item_listener != null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION)
-                            item_listener.onItemErrorClick(itemView, position);
-                    }
-                }
-            });
-        }
     }
 
     private static class OrderVH extends RecyclerView.ViewHolder{
@@ -91,23 +92,10 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     if (item_listener != null){
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION)
-                            item_listener.onItemOrderClick(itemView, position);
+                            item_listener.onItemClick(itemView, position);
                     }
                 }
             });
-        }
-    }
-
-
-    @Override
-    public int getItemViewType(int position) {
-        Order order = data.get(position);
-        if(order == null){
-            return 0;
-        }else if (order.getName() != null){
-            return 1;
-        }else {
-            return -1;
         }
     }
 
@@ -115,27 +103,16 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        if(viewType == 1){
-            View view = inflater.inflate(R.layout.item_list_order, parent, false);
-            return new OrderVH(view);
-        }else if (viewType == 0){
-            View view = inflater.inflate(R.layout.item_progress, parent, false);
-            return new ProgressVH(view);
-        }else {
-            View view = inflater.inflate(R.layout.error_form, parent, false);
-            view.setVisibility(View.VISIBLE);
-            return new ErrorVH(view);
-        }
-
-
+        View view = inflater.inflate(R.layout.item_list_order, parent, false);
+        return new OrderVH(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof OrderVH){
             // Get the order model based on position
             Order order = data.get(position);
             OrderVH vh = (OrderVH)holder;
+
             // Set item views based on your views and order model
             TextView text_image_order = vh.text_image_order;
             View image_order = vh.image_order;
@@ -154,9 +131,6 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             int[] androidColors = context.getResources().getIntArray(R.array.androidcolors);
             int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
             ((GradientDrawable)background).setColor(randomAndroidColor);
-        }
-
-
     }
 
     @Override

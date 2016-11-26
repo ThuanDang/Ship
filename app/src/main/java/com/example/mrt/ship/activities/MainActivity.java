@@ -14,13 +14,13 @@ import android.widget.TextView;
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.PagerAdapter;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
-import com.example.mrt.ship.interfaces.OnFragmentOptionsScrollListener;
+import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 
 
 public class MainActivity extends AppCompatActivity implements
         OnFragmentOrdersListener,
-        OnFragmentOptionsScrollListener,
+        OnFragmentOptionsListener,
         OnFragmentMapListener {
 
     private String[] titles = { "Các đơn hàng đang chờ","Đơn hàng quanh đây",
@@ -152,14 +152,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void countOrders(int n) {
+    public void countOrders(int n, int page) {
         count.setText(String.valueOf(n));
-        counts[0] = String.valueOf(n);
+        counts[page] = String.valueOf(n);
     }
 
-    @Override
-    public void countInMap(int n) {
-        count.setText(String.valueOf(n));
-        counts[1] = String.valueOf(n);
-    }
 }

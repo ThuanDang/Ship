@@ -58,7 +58,7 @@
         android:layout_width="24dp" />
 
     <include
-        layout="@layout/error_form"/>
+        layout="@layout/form_error"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_search"

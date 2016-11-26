@@ -14,10 +14,8 @@ import com.example.mrt.ship.R;
 
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
-    private Context context;
     public DividerItemDecoration(Context context) {
         mDivider = context.getResources().getDrawable(R.drawable.line_divider, context.getTheme());
-        this.context = context;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
             return new SearchOnMapFragment();
         }
         else if (position == 2){
-            return ReceivedOrdersFragment.newInstance(3);
+            return new ReceivedOrdersFragment();
         }else {
             return new OptionsFragment();
         }
@@ -52,7 +52,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     public View getTabItem(int position){
-        View v = LayoutInflater.from(context).inflate(R.layout.tab_item, null);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_tab, null);
         ImageView img = (ImageView)v.findViewById(R.id.tab_icon);
         ColorStateList colors;
         if (Build.VERSION.SDK_INT >= 23) {

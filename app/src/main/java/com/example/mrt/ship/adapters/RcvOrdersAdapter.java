@@ -33,23 +33,14 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         implements ItemTouchHelperAdapter {
     private List<Order> data;
     private Context context;
-    private SwipeRefreshLayout swipe;
-    private boolean swipe_enable = true;
+    private SwipeRefreshLayout refresh;
+    private boolean noRefresh = true;
     // Interface click item
     private static OnItemClickListener item_listener;
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
-       /* if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(data, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(data, i, i - 1);
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition);*/
+
     }
 
     @Override
@@ -60,9 +51,9 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onItemDrag(boolean x) {
-        if(swipe_enable != x){
-            swipe_enable = x;
-            swipe.setEnabled(!x);
+        if(noRefresh != x){
+            noRefresh = x;
+            refresh.setEnabled(!x);
         }
     }
 
@@ -77,10 +68,10 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     // constructor
-    public RcvOrdersAdapter(Context context, List<Order> data, SwipeRefreshLayout swipe){
+    public RcvOrdersAdapter(Context context, List<Order> data, SwipeRefreshLayout refresh){
         this.context = context;
         this.data = data;
-        this.swipe = swipe;
+        this.refresh = refresh;
     }
 
     private static class ProgressVH extends RecyclerView.ViewHolder{
@@ -159,7 +150,7 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             View view = inflater.inflate(R.layout.item_progress, parent, false);
             return new ProgressVH(view);
         }else {
-            View view = inflater.inflate(R.layout.error_form, parent, false);
+            View view = inflater.inflate(R.layout.form_error, parent, false);
             view.setVisibility(View.VISIBLE);
             return new ErrorVH(view);
         }

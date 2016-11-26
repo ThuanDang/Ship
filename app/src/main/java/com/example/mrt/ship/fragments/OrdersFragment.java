@@ -43,24 +43,21 @@ import retrofit2.Response;
  */
 
 public class OrdersFragment extends Fragment {
-    private OnFragmentOrdersListener mListener;
-    private SwipeRefreshLayout swipeContainer;
+    
+    private SwipeRefreshLayout swipeRefresh;
     private RecyclerView rvOrderList;
-    private RcvOrdersAdapter adapter;
     private ProgressBar progressBar;
     private View errorForm;
-    private List<Order> data;
+    
     private ApiInterface api;
     private GetJson getJson;
     private String token;
-
-    private EndlessRecyclerViewScrollerListener listener;
+    private RcvOrdersAdapter adapter;
+    private List<Order> data;
+    private OnFragmentOrdersListener fragmentListener;
+    private EndlessRecyclerViewScrollerListener endlessListener;
 
     private Handler handler = new Handler();
-
-    public static OrdersFragment newInstance(){
-        return new OrdersFragment();
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,30 +68,19 @@ public class OrdersFragment extends Fragment {
         token = preferences.getString("token", "");
     }
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_orders, container, false);
-
-        // swipe
-        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_orders);
-        // progress bar
-        progressBar = (ProgressBar)view.findViewById(R.id.progress_orders);
-        // error form
+        
+        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipe_orders);
+        progressBar = (ProgressBar)view.findViewById(R.id.progress);
         errorForm = view.findViewById(R.id.error_form);
-        errorForm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showProgress(true);
-                showError(false);
-                fetchData();
-            }
-        });
-        // recycler view
         rvOrderList = (RecyclerView)view.findViewById(R.id.list_order);
-        // config RecyclerView
-        setRecyclerView();
-        // config Swipe
+        
+        setList();
+        setError();
         setSwipeRefresh();
 
         handler.postDelayed(new Runnable() {
@@ -105,82 +91,50 @@ public class OrdersFragment extends Fragment {
             }
         },400);
 
-
-
         return view;
     }
 
 
-    //---------------------------------------------------------------------------------------------
-    private void showProgress(final boolean show) {
-        if(progressBar.isShown() != show){
-            int shortAnimTime = 300;
-            swipeContainer.setEnabled(!show);
-            rvOrderList.setVisibility(show ? View.GONE : View.VISIBLE);
-            rvOrderList.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    rvOrderList.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        }
-    }
-
-//-----------------------------------------------------------------------------------------------
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentOrdersListener) {
-            mListener = (OnFragmentOrdersListener) context;
+            fragmentListener = (OnFragmentOrdersListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentOrdersListener");
         }
     }
 
-//----------------------------------------------------------------------------------------------
-    public void setRecyclerView(){
-        adapter = new RcvOrdersAdapter(getContext(), data, swipeContainer);
+//---------------------------------------------------------------------------------------------
+
+    public void setList(){
+        adapter = new RcvOrdersAdapter(getContext(), data, swipeRefresh);
         rvOrderList.setAdapter(adapter);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        rvOrderList.setLayoutManager(linearLayoutManager);
+        rvOrderList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvOrderList.setHasFixedSize(true);
+        rvOrderList.addItemDecoration(new SpacesItemDecorationPaddingTop(getContext(), 10, 48));
 
-        rvOrderList.addItemDecoration(
-                new SpacesItemDecorationPaddingTop(getContext(),10, 48));
-
-        ItemTouchHelper.Callback callback =
-                new ItemTouchHelperCallback(adapter, getContext());
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(
+                new ItemTouchHelperCallback(adapter, getContext(), true, false));
         touchHelper.attachToRecyclerView(rvOrderList);
 
         // set hide tab
         rvOrderList.addOnScrollListener(new HideScrollListener() {
             @Override
             public void onHide() {
-                mListener.hideViews();
+                fragmentListener.hideViews();
             }
 
             @Override
             public void onShow() {
-                mListener.showViews();
+                fragmentListener.showViews();
             }
         });
 
         // set load more
-        listener = new EndlessRecyclerViewScrollerListener(
-                linearLayoutManager, adapter) {
+        endlessListener = new EndlessRecyclerViewScrollerListener(
+                (LinearLayoutManager)rvOrderList.getLayoutManager(), adapter) {
             @Override
             public void onLoadMore(final int position) {
                 final List<Order> adapterData = adapter.getData();
@@ -213,7 +167,7 @@ public class OrdersFragment extends Fragment {
                                 data.addAll(getJson.getResults());
                                 adapter.swapItems(data);
 
-                                mListener.countOrders(getJson.getCount());
+                                fragmentListener.countOrders(getJson.getCount(), 0);
                             }
                         }
 
@@ -229,7 +183,7 @@ public class OrdersFragment extends Fragment {
                 }
             }
         };
-        rvOrderList.addOnScrollListener(listener);
+        rvOrderList.addOnScrollListener(endlessListener);
 
         // set click for item in recycler view
         adapter.setOnItemClickListener(new RcvOrdersAdapter.OnItemClickListener() {
@@ -242,42 +196,88 @@ public class OrdersFragment extends Fragment {
             public void onItemErrorClick(View itemView, int position) {
                 adapter.getData().remove(position);
                 adapter.notifyItemRemoved(position);
-                listener.onLoadMore(position);
+                endlessListener.onLoadMore(position);
             }
         });
     }
 
-//----------------------------------------------------------------------------------------------
-    public void setSwipeRefresh(){
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//---------------------------------------------------------------------------------------------
 
+    public void setError(){
+        errorForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgress(true);
+                showError(false);
+                fetchData();
+            }
+        });
+    }
+
+//---------------------------------------------------------------------------------------------
+
+    public void setSwipeRefresh(){
+        // Setup refresh endlessListener which triggers new data loading
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 fetchData();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        swipeContainer.setRefreshing(false);
+                        swipeRefresh.setRefreshing(false);
                     }
                 }, 400);
 
             }
-
         });
-
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(R.color.colorPrimaryDark,
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-        swipeContainer.setProgressViewOffset(false, 40, 150);
+        // Set margin to top
+        swipeRefresh.setProgressViewOffset(false, 40, 150);
     }
-//------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------
+
+    private void showProgress(final boolean show) {
+        if(progressBar.isShown() != show){
+            int shortAnimTime = 300;
+            swipeRefresh.setEnabled(!show);
+            rvOrderList.setVisibility(show ? View.GONE : View.VISIBLE);
+            rvOrderList.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    rvOrderList.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressBar.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
+    }
+
+//-------------------------------------------------------------------------------------------------
+
+    public void showError(boolean show){
+        errorForm.setVisibility(show?View.VISIBLE:View.GONE);
+        errorForm.animate().alpha(show?1:0).setDuration(300);
+    }
+
+//-------------------------------------------------------------------------------------------------
 
     public void fetchData(){
 
-       Call<GetJson> call = api.getListOrder("Token " + token);
+        Call<GetJson> call = api.getListOrder("Token " + token);
 
         call.enqueue(new Callback<GetJson>() {
             int status;
@@ -300,7 +300,7 @@ public class OrdersFragment extends Fragment {
                             }
                         }, 300);
 
-                        mListener.countOrders(getJson.getCount());
+                        fragmentListener.countOrders(getJson.getCount(), 0);
 
                     }
                 }
@@ -312,11 +312,5 @@ public class OrdersFragment extends Fragment {
             }
         });
     }
-//----------------------------------------------------------------------------------------------
-    public void showError(boolean show){
-        errorForm.setVisibility(show?View.VISIBLE:View.GONE);
-        errorForm.animate().alpha(show?1:0).setDuration(300);
-    }
-//----------------------------------------------------------------------------------------------
 
 }
