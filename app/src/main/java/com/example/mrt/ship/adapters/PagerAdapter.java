@@ -22,8 +22,8 @@ import com.example.mrt.ship.fragments.SearchOnMapFragment;
 
 public class PagerAdapter extends FragmentPagerAdapter {
     private Context context;
-    private int[] imageResId = {R.drawable.ic_orders, R.drawable.ic_map,
-            R.drawable.ic_tasks, R.drawable.ic_list_menu};
+    private int[] imageResId = {R.drawable.ic_orders, R.drawable.ic_tasks,
+            R.drawable.ic_map, R.drawable.ic_list_menu};
 
     public PagerAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -33,14 +33,15 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0){
-            return OrdersFragment.newInstance();
+            return new OrdersFragment();
 
         }
         else if (position == 1){
-            return new SearchOnMapFragment();
+            return new ReceivedOrdersFragment();
         }
         else if (position == 2){
-            return new ReceivedOrdersFragment();
+
+            return new SearchOnMapFragment();
         }else {
             return new OptionsFragment();
         }

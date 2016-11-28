@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +21,11 @@ import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.RcvReceivedAdapter;
 import com.example.mrt.ship.interfaces.HideScrollListener;
 import com.example.mrt.ship.interfaces.OnFragmentReceivedListener;
-import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.networks.ApiInterface;
 import com.example.mrt.ship.networks.GetJson;
 import com.example.mrt.ship.networks.RESTfulApi;
-import com.example.mrt.ship.preferences.DividerItemDecoration;
-import com.example.mrt.ship.preferences.ItemTouchHelperCallback;
+import com.example.mrt.ship.preferences.SpacesItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +109,7 @@ public class ReceivedOrdersFragment extends Fragment {
         receivedList.setAdapter(adapter);
         receivedList.setLayoutManager(new LinearLayoutManager(getContext()));
         receivedList.setHasFixedSize(true);
-        receivedList.addItemDecoration(new DividerItemDecoration(getContext()));
+        receivedList.addItemDecoration(new SpacesItemDecoration(10));
         receivedList.addOnScrollListener(new HideScrollListener() {
             @Override
             public void onHide() {
@@ -124,9 +121,6 @@ public class ReceivedOrdersFragment extends Fragment {
                 listener.showTab();
             }
         });
-        ItemTouchHelper touchHelper = new ItemTouchHelper(
-                new ItemTouchHelperCallback(adapter, getContext(), false, true));
-        touchHelper.attachToRecyclerView(receivedList);
 
         adapter.setOnItemClickListener(new RcvReceivedAdapter.OnItemClickListener() {
             @Override

@@ -26,6 +26,8 @@ import java.util.Locale;
  */
 
 public class MapUtils {
+    private static AlertDialog dialog;
+
     /**
      * Check if GPS is off, require user turn on GPS to pass
      * @param context
@@ -44,12 +46,13 @@ public class MapUtils {
         } catch(Exception ex) {}
 
         if(!gps_enabled && !network_enabled) {
+
             // notify user
-            AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-            dialog.setCancelable(false);
-            dialog.setTitle(context.getResources().getString(R.string.gps_network_not_enabled));
-            dialog.setMessage("Bật GPS cho phép bạn tìm thấy những đơn hàng xung quanh vị trí của mình.");
-            dialog.setPositiveButton(context.getResources().getString(R.string.open_location_settings)
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setCancelable(false);
+            builder.setTitle(context.getResources().getString(R.string.gps_network_not_enabled));
+            builder.setMessage("Bật GPS cho phép bạn tìm thấy những đơn hàng xung quanh vị trí của mình.");
+            builder.setPositiveButton(context.getResources().getString(R.string.open_location_settings)
                     , new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
@@ -59,7 +62,7 @@ public class MapUtils {
                             //get gps
                         }
                     });
-            dialog.setNegativeButton(context.getString(R.string.Cancel),
+            builder.setNegativeButton(context.getString(R.string.Cancel),
                     new DialogInterface.OnClickListener() {
 
                 @Override
@@ -68,7 +71,16 @@ public class MapUtils {
                     paramDialogInterface.cancel();
                 }
             });
+            dialog = builder.create();
             dialog.show();
+        }
+
+    }
+
+
+    public static void cancelDialog(){
+        if(dialog != null){
+            dialog.cancel();
         }
     }
 

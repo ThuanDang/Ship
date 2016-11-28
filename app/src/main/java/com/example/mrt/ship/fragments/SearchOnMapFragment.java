@@ -53,15 +53,17 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     private String token;
     private android.location.Location myLocation;
     private GoogleMap map;
-    private Handler handler = new Handler();
     private OnFragmentMapListener mListener;
+
+    private Handler handler = new Handler();
+    private Context context;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         api = RESTfulApi.getApi();
-        token = PreferenceManager.getDefaultSharedPreferences(getContext())
+        token = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString("token", "");
     }
 
@@ -88,9 +90,9 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
 
         map.setInfoWindowAdapter(new CustomWindowAdapter(getActivity().getLayoutInflater()));
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -118,17 +120,20 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MapUtils.checkGPS(getContext());
+                    MapUtils.checkGPS(context);
                 }
-            }, 400);
+            }, 450);
 
             if(myLocation == null){
                 start = true;
             }else {
-                if(MapUtils.GPSisON(getContext())){
+                if(MapUtils.GPSisON(context)){
                     fetchData();
                 }
             }
+        }else {
+            handler.removeCallbacksAndMessages(null);
+            MapUtils.cancelDialog();
         }
 
     }
@@ -187,9 +192,9 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     public void showError(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(getContext().getResources().getString(R.string.connect_error_title));
-        builder.setMessage(getContext().getResources().getString(R.string.connect_error_message));
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getResources().getString(R.string.connect_error_title));
+        builder.setMessage(context.getResources().getString(R.string.connect_error_message));
         builder.setCancelable(false);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
@@ -206,9 +211,13 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
 
     }
 
+
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         if (context instanceof OnFragmentMapListener) {
             mListener = (OnFragmentMapListener) context;
         } else {
@@ -216,4 +225,5 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                     + " must implement OnFragmentOrdersListener");
         }
     }
+
 }

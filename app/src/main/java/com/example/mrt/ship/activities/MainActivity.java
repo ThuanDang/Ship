@@ -16,15 +16,17 @@ import com.example.mrt.ship.adapters.PagerAdapter;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
 import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
+import com.example.mrt.ship.interfaces.OnFragmentReceivedListener;
 
 
 public class MainActivity extends AppCompatActivity implements
         OnFragmentOrdersListener,
         OnFragmentOptionsListener,
-        OnFragmentMapListener {
+        OnFragmentMapListener ,
+        OnFragmentReceivedListener{
 
-    private String[] titles = { "Các đơn hàng đang chờ","Đơn hàng quanh đây",
-            "Các đơn hàng đã nhận", "Tùy chọn"};
+    private String[] titles = { "Các đơn hàng đang chờ", "Các đơn hàng đã nhận",
+            "Đơn hàng quanh đây", "Tùy chọn"};
     private String[] counts = {"", "", "", ""};
 
     private View tabLayoutForm;
@@ -125,20 +127,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 // ----------------- Hide TabLayout-----------------------
-    @Override
-    public void hideViews() {
-        tabLayoutForm.animate().translationY(tabLayoutForm.getHeight())
-                .setInterpolator(new AccelerateInterpolator(2));
-        topView.animate().translationY(-search.getHeight())
-        .setInterpolator(new AccelerateInterpolator(2));
-    }
-
-    @Override
-    public void showViews() {
-        tabLayoutForm.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-        topView.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-    }
-
 
     @Override
     public void hideTab() {
@@ -157,4 +145,14 @@ public class MainActivity extends AppCompatActivity implements
         counts[page] = String.valueOf(n);
     }
 
+    @Override
+    public void hideSearch() {
+        topView.animate().translationY(-search.getHeight())
+                .setInterpolator(new AccelerateInterpolator(2));
+    }
+
+    @Override
+    public void showSearch() {
+        topView.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+    }
 }

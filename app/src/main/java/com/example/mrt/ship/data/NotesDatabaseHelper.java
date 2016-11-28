@@ -86,7 +86,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper{
 
     public List<Note> getAllNotes(){
         List<Note> notes = new ArrayList<>();
-        String NOTES_SELECT_QUERY = String.format("select * from %s order by %s desc", TABLE_NOTES,
+        String NOTES_SELECT_QUERY = String.format("select * from %s order by %s asc", TABLE_NOTES,
                 NOTE_DATE);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(NOTES_SELECT_QUERY, null);

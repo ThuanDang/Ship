@@ -123,12 +123,14 @@ public class OrdersFragment extends Fragment {
         rvOrderList.addOnScrollListener(new HideScrollListener() {
             @Override
             public void onHide() {
-                fragmentListener.hideViews();
+                fragmentListener.hideTab();
+                fragmentListener.hideSearch();
             }
 
             @Override
             public void onShow() {
-                fragmentListener.showViews();
+                fragmentListener.showTab();
+                fragmentListener.showSearch();
             }
         });
 
@@ -237,7 +239,7 @@ public class OrdersFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         // Set margin to top
-        swipeRefresh.setProgressViewOffset(false, 40, 150);
+        swipeRefresh.setProgressViewOffset(false, 0, 120);
     }
 
 //----------------------------------------------------------------------------------------------

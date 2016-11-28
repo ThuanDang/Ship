@@ -26,11 +26,6 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
     private Context context;
     private List<Note> data = new ArrayList<>();
 
-    // Interface click item
-    private static OnItemClickListener item_listener;
-    public interface OnItemClickListener{
-        void onItemClick(View itemView, int position);
-    }
 
     // Interface click options menu
     private static OnOptionMenuClickListener menu_listener;
@@ -39,17 +34,12 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
         void onUpdateClick(int position);
     }
 
-    // Set listener method
-    public void setOnItemClickListener(OnItemClickListener listener){
-        this.item_listener = listener;
-    }
     public void setOnOptionMenuListener(OnOptionMenuClickListener listener){
         this.menu_listener = listener;
     }
 
     // Constructor
     public RcvNotesAdapter(Context context){
-        this.data = data;
         this.context = context;
     }
 
@@ -63,17 +53,6 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
             header_note = (TextView)itemView.findViewById(R.id.header_note);
             content_note = (TextView)itemView.findViewById(R.id.content_note);
             date_note = (TextView)itemView.findViewById(R.id.date_note);
-            // Setup the click listener
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (item_listener != null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION)
-                            item_listener.onItemClick(itemView, position);
-                    }
-                }
-            });
 
         }
     }
