@@ -48,6 +48,7 @@ public class ReceivedOrdersFragment extends Fragment {
     private TextView plan;
 
     private ApiInterface api;
+    private GetJson getJson;
     private List<Order> data;
     private RcvReceivedAdapter adapter;
     private OnFragmentReceivedListener listener;
@@ -175,19 +176,20 @@ public class ReceivedOrdersFragment extends Fragment {
 
     public void fetchData(){
 
-        Call<List<Order>> call = api.getReceivedOrders("Bearer " + token);
+        Call<GetJson> call = api.getListOrder("Token " + token);
 
-        call.enqueue(new Callback<List<Order>>() {
+        call.enqueue(new Callback<GetJson>() {
             int status;
             @Override
-            public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+            public void onResponse(Call<GetJson> call, Response<GetJson> response) {
                 status = response.code();
-                data = response.body();
+                getJson = response.body();
 
                 if(status != 200){
                     showError(true);
                 }else {
-                    if(data != null){
+                    if(getJson != null){
+                        data = getJson.getResults();
                         adapter.swapItems(data);
 
                         handler.postDelayed(new Runnable() {
@@ -197,14 +199,15 @@ public class ReceivedOrdersFragment extends Fragment {
                             }
                         }, 300);
 
-                        listener.countOrders(data.size(), 1);
-                        task.setMax(data.size());
+                        listener.countOrders(getJson.getCount(), 1);
+                        task.setMax(getJson.getCount());
+
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Order>> call, Throwable t) {
+            public void onFailure(Call<GetJson> call, Throwable t) {
                 showError(true);
             }
         });
