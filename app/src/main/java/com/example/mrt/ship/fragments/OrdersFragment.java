@@ -3,6 +3,7 @@ package com.example.mrt.ship.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -115,7 +117,7 @@ public class OrdersFragment extends Fragment {
         rvOrderList.setHasFixedSize(true);
         rvOrderList.addItemDecoration(new SpacesItemDecorationPaddingTop(getContext(), 10, 48));
 
-        ItemTouchHelper touchHelper = new ItemTouchHelper(
+        final ItemTouchHelper touchHelper = new ItemTouchHelper(
                 new ItemTouchHelperCallback(adapter, getContext(), true, false));
         touchHelper.attachToRecyclerView(rvOrderList);
 
@@ -140,12 +142,12 @@ public class OrdersFragment extends Fragment {
             @Override
             public void onLoadMore(final int position) {
                 final List<Order> adapterData = adapter.getData();
-                if(getJson.getNext() != null){
+                if(getJson.getNext_page_url() != null){
                     // show progress bar
                     adapterData.add(position, null);
                     adapter.notifyItemInserted(position);
 
-                    Call<GetJson> call = api.getListOrderMore("Token " + token, getJson.getNext());
+                    Call<GetJson> call = api.getListOrderMore("Bearer " + token, getJson.getNext_page_url());
                     call.enqueue(new Callback<GetJson>() {
                         int status;
                         @Override
@@ -166,10 +168,10 @@ public class OrdersFragment extends Fragment {
                                 adapter.getData().remove(adapterData.size() - 1);
                                 adapter.notifyItemRemoved(adapter.getData().size());
                                 // notify data change
-                                data.addAll(getJson.getResults());
+                                data.addAll(getJson.getData());
                                 adapter.swapItems(data);
 
-                                fragmentListener.countOrders(getJson.getCount(), 0);
+                                fragmentListener.countOrders(getJson.getTotal(), 0);
                             }
                         }
 
@@ -199,6 +201,56 @@ public class OrdersFragment extends Fragment {
                 adapter.getData().remove(position);
                 adapter.notifyItemRemoved(position);
                 endlessListener.onLoadMore(position);
+            }
+        });
+
+        // set swiped item
+        adapter.setOnItemSwipedListener(new RcvOrdersAdapter.OnItemSwipedListener() {
+            @Override
+            public void onSwiped(final int position, int direction) {
+                Call<Void> call = api.registerOrder("Bearer " + token,
+                        adapter.getData().get(position).getId());
+                call.enqueue(new Callback<Void>() {
+                    int status;
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        status = response.code();
+                        if(status != 200){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setCancelable(false);
+                            builder.setTitle("Không thể nhận đơn hàng");
+                            builder.setMessage("Có vẻ như ai đó đã nhận đơn hàng này trước bạn," +
+                                    "hãy đảm bảo danh sách đơn hàng của bạn là mới nhất");
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    fetchData();
+                                }
+                            });
+                            builder.show();
+                        }else {
+                            adapter.getData().remove(position);
+                            adapter.notifyItemRemoved(position);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setCancelable(false);
+                        builder.setTitle("Lỗi kết nối");
+                        builder.setMessage("Không thể kết nối tới máy chủ, vui lòng kiểm tra kết " +
+                                "nối internet của bạn.");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.show();
+                    }
+                });
             }
         });
     }
@@ -279,7 +331,7 @@ public class OrdersFragment extends Fragment {
 
     public void fetchData(){
 
-        Call<GetJson> call = api.getListOrder("Token " + token);
+        Call<GetJson> call = api.getListOrder("Bearer " + token);
 
         call.enqueue(new Callback<GetJson>() {
             int status;
@@ -292,7 +344,7 @@ public class OrdersFragment extends Fragment {
                     showError(true);
                 }else {
                     if(getJson != null){
-                        data = getJson.getResults();
+                        data = getJson.getData();
                         adapter.swapItems(data);
 
                         handler.postDelayed(new Runnable() {
@@ -302,7 +354,7 @@ public class OrdersFragment extends Fragment {
                             }
                         }, 300);
 
-                        fragmentListener.countOrders(getJson.getCount(), 0);
+                        fragmentListener.countOrders(getJson.getTotal(), 0);
 
                     }
                 }

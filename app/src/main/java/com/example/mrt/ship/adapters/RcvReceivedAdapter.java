@@ -25,36 +25,12 @@ import java.util.Random;
  */
 
 // Create adapter extends RecyclerView.Adapter with specific ViewHolder
-public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-implements ItemTouchHelperAdapter{
+public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private List<Order> data;
     private Context context;
 
     private static OnItemClickListener item_listener;
 
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(data, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(data, i, i - 1);
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-
-    }
-
-    @Override
-    public void onItemDrag(boolean x) {
-
-    }
 
     public interface OnItemClickListener{
         void onItemClick(View itemView, int position);
@@ -103,7 +79,7 @@ implements ItemTouchHelperAdapter{
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.item_list_order, parent, false);
+        View view = inflater.inflate(R.layout.item_list_received, parent, false);
         return new OrderVH(view);
     }
 
@@ -121,10 +97,10 @@ implements ItemTouchHelperAdapter{
             TextView place_delivery = vh.place_delivery;
             TextView ship_cost = vh.ship_cost;
 
-            text_image_order.setText(order.getName().substring(0, 1));
+            text_image_order.setText(String.valueOf(position + 1));
             name_order.setText(order.getName());
-            place_receiver.setText(order.getFrom_address().getName());
-            place_delivery.setText(order.getTo_address().getName());
+            place_receiver.setText(order.getWare_house().getAddress());
+            place_delivery.setText(order.getRecipient().getAddress());
             ship_cost.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.US));
             // Set random color icon
             Drawable background = image_order.getBackground();

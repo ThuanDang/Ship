@@ -9,40 +9,33 @@ import java.util.List;
  */
 
 public class GetJson {
-    private int count;
-    private String next;
-    private String previous;
-    private List<Order> results;
+    private int total;
+    private String next_page_url;
+    private List<Order> data;
 
-    public int getCount() {
-        return count;
+    public int getTotal() {
+        return total;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setTotal(int total) {
+        this.total = total;
     }
 
-    public String getNext() {
-        return next;
+    public String getNext_page_url() {
+        return next_page_url;
     }
 
-    public void setNext(String next) {
-        this.next = next;
+    public void setNext_page_url(String next_page_url) {
+        this.next_page_url = next_page_url;
     }
 
-    public String getPrevious() {
-        return previous;
+    public List<Order> getData() {
+        return data;
     }
 
-    public void setPrevious(String previous) {
-        this.previous = previous;
-    }
-
-    public List<Order> getResults() {
-        return results;
-    }
-
-    public void setResults(List<Order> results) {
-        this.results = results;
+    public void setData(List<Order> data) {
+        this.data = data;
     }
 }
+
+

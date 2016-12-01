@@ -66,7 +66,7 @@
             android:layout_centerVertical="true"
             android:textOn=""
             android:textOff=""
-            android:background="@drawable/toggle_button"
+            android:background="@drawable/toggle_option"
             android:layout_width="48dp"
             android:layout_height="48dp" />
     </RelativeLayout>
