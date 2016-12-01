@@ -25,13 +25,10 @@
             android:value="AIzaSyCO80d2HeElbprv2Gn9HI9ER0Y8HF6wsTY" />
 
         <activity android:name=".activities.NoteActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar.ColorAccent"></activity>
+            android:theme="@style/AppTheme.NoActionBar.ColorAccent"/>
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar.ColorAccent">
@@ -43,8 +40,8 @@
         </activity>
         <activity
             android:name=".activities.SearchActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activities.DetailOrderActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activities.DetailOrderActivity"/>
     </application>
 
 </manifest>

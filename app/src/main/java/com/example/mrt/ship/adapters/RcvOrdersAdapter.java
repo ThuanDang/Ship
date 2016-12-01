@@ -1,11 +1,13 @@
 package com.example.mrt.ship.adapters;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +17,16 @@ import com.example.mrt.ship.R;
 
 import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 import com.example.mrt.ship.models.Order;
+import com.example.mrt.ship.networks.GetJson;
+import com.example.mrt.ship.networks.RESTfulApi;
 import com.example.mrt.ship.preferences.OrdersDiffCallback;
 import com.example.mrt.ship.utils.FormatUtils;
 
 
 import java.util.List;
 import java.util.Random;
+
+import retrofit2.Call;
 
 
 /**
@@ -36,7 +42,26 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private SwipeRefreshLayout refresh;
     private boolean noRefresh = true;
     // Interface click item
-    private static OnItemClickListener item_listener;
+    private static OnItemClickListener click_listener;
+    private static OnItemSwipedListener swiped_listener;
+
+    public interface OnItemClickListener{
+        void onItemOrderClick(View itemView, int position);
+        void onItemErrorClick(View itemView, int position);
+    }
+    
+    public interface OnItemSwipedListener {
+        void onSwiped(int position, int direction);
+    }
+
+    // Set listener
+    public void setOnItemClickListener(OnItemClickListener listener){
+        click_listener = listener;
+    }
+    public void setOnItemSwipedListener(OnItemSwipedListener listener){
+        swiped_listener = listener;
+    }
+
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
@@ -44,9 +69,15 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onItemDismiss(int position) {
-        data.remove(position);
-        notifyItemRemoved(position);
+    public void onItemDismiss(int position, int direction) {
+        if(direction == ItemTouchHelper.RIGHT){
+            swiped_listener.onSwiped(position, direction);
+        }
+        else {
+            data.remove(position);
+            notifyItemRemoved(position);
+        }
+
     }
 
     @Override
@@ -57,15 +88,7 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public interface OnItemClickListener{
-        void onItemOrderClick(View itemView, int position);
-        void onItemErrorClick(View itemView, int position);
-    }
-    // Set listener method
-    public void setOnItemClickListener(OnItemClickListener listener){
-        item_listener = listener;
-    }
-
+   
 
     // constructor
     public RcvOrdersAdapter(Context context, List<Order> data, SwipeRefreshLayout refresh){
@@ -87,10 +110,10 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (item_listener != null){
+                    if (click_listener != null){
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION)
-                            item_listener.onItemErrorClick(itemView, position);
+                            click_listener.onItemErrorClick(itemView, position);
                     }
                 }
             });
@@ -116,10 +139,10 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (item_listener != null){
+                    if (click_listener != null){
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION)
-                            item_listener.onItemOrderClick(itemView, position);
+                            click_listener.onItemOrderClick(itemView, position);
                     }
                 }
             });

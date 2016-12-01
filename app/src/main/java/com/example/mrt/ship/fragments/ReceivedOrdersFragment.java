@@ -176,20 +176,19 @@ public class ReceivedOrdersFragment extends Fragment {
 
     public void fetchData(){
 
-        Call<GetJson> call = api.getListOrder("Token " + token);
+        Call<List<Order>> call = api.getReceivedOrders("Token " + token);
 
-        call.enqueue(new Callback<GetJson>() {
+        call.enqueue(new Callback<List<Order>>() {
             int status;
             @Override
-            public void onResponse(Call<GetJson> call, Response<GetJson> response) {
+            public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
                 status = response.code();
-                getJson = response.body();
+                data = response.body();
 
                 if(status != 200){
                     showError(true);
                 }else {
-                    if(getJson != null){
-                        data = getJson.getResults();
+                    if(data != null){
                         adapter.swapItems(data);
 
                         handler.postDelayed(new Runnable() {
@@ -201,13 +200,12 @@ public class ReceivedOrdersFragment extends Fragment {
 
                         listener.countOrders(getJson.getCount(), 1);
                         task.setMax(getJson.getCount());
-
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<GetJson> call, Throwable t) {
+            public void onFailure(Call<List<Order>> call, Throwable t) {
                 showError(true);
             }
         });

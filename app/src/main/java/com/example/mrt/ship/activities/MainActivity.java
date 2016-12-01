@@ -155,4 +155,5 @@ public class MainActivity extends AppCompatActivity implements
     public void showSearch() {
         topView.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
     }
+
 }

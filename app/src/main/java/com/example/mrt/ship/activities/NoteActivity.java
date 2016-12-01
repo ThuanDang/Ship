@@ -23,6 +23,7 @@ public class NoteActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("Ghi chú");
         // Begin the transaction
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

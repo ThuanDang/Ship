@@ -25,36 +25,12 @@ import java.util.Random;
  */
 
 // Create adapter extends RecyclerView.Adapter with specific ViewHolder
-public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-implements ItemTouchHelperAdapter{
+public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private List<Order> data;
     private Context context;
 
     private static OnItemClickListener item_listener;
 
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(data, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(data, i, i - 1);
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-
-    }
-
-    @Override
-    public void onItemDrag(boolean x) {
-
-    }
 
     public interface OnItemClickListener{
         void onItemClick(View itemView, int position);
@@ -103,7 +79,7 @@ implements ItemTouchHelperAdapter{
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.item_list_order, parent, false);
+        View view = inflater.inflate(R.layout.item_list_received, parent, false);
         return new OrderVH(view);
     }
 
