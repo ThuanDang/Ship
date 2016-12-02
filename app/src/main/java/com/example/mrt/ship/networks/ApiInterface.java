@@ -36,10 +36,4 @@ public interface ApiInterface {
     @GET("/ship/search/map/{lat}/{lng}/")
     Call<List<Order>> searchOnMap(@Header("Authorization") String token, @Path("lat") double lat,
                                   @Path("lng") double lng);
-
-    @GET("/ship/received/orders")
-    Call<List<Order>> getReceivedOrders(@Header("Authorization") String token);
-
-    @GET("/ship/orders/{pk}/register")
-    Call<Void> registerOrder(@Header("Authorization") String token, @Path("pk") int pk);
 }

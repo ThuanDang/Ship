@@ -166,7 +166,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<TokenAuthentication> call, Response<TokenAuthentication> response) {
                 statusCode = response.code();
-                Log.d("statusCode", "onResponse: " + statusCode);
                 token = response.body();
                 if(statusCode == 400){
                     handler.postDelayed(new Runnable() {

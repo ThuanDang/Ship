@@ -200,8 +200,8 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             text_image_order.setText(order.getName().substring(0, 1));
             name_order.setText(order.getName());
-            place_receiver.setText(order.getFrom_address().getName());
-            place_delivery.setText(order.getTo_address().getName());
+            place_receiver.setText(order.getWare_house().getAddress());
+            place_delivery.setText(order.getRecipient().getAddress());
             ship_cost.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
             deposit.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
 

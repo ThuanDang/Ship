@@ -17,9 +17,9 @@ import android.view.ViewGroup;
 
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.CustomWindowAdapter;
-import com.example.mrt.ship.models.Location;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
+import com.example.mrt.ship.models.WareHouse;
 import com.example.mrt.ship.networks.ApiInterface;
 import com.example.mrt.ship.networks.RESTfulApi;
 import com.example.mrt.ship.utils.MapUtils;
@@ -166,7 +166,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                                 @Override
                                 public void run() {
                                     for(Order item: data){
-                                        Location address = item.getFrom_address();
+                                        WareHouse address = item.getWare_house();
                                         Marker marker = map.addMarker(new MarkerOptions()
                                                 .position(new LatLng(address.getLatitude(),
                                                         address.getLongitude()))

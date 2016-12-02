@@ -3,7 +3,6 @@ package com.example.mrt.ship.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -117,7 +115,7 @@ public class OrdersFragment extends Fragment {
         rvOrderList.setHasFixedSize(true);
         rvOrderList.addItemDecoration(new SpacesItemDecorationPaddingTop(getContext(), 10, 48));
 
-        final ItemTouchHelper touchHelper = new ItemTouchHelper(
+        ItemTouchHelper touchHelper = new ItemTouchHelper(
                 new ItemTouchHelperCallback(adapter, getContext(), true, false));
         touchHelper.attachToRecyclerView(rvOrderList);
 
@@ -201,56 +199,6 @@ public class OrdersFragment extends Fragment {
                 adapter.getData().remove(position);
                 adapter.notifyItemRemoved(position);
                 endlessListener.onLoadMore(position);
-            }
-        });
-
-        // set swiped item
-        adapter.setOnItemSwipedListener(new RcvOrdersAdapter.OnItemSwipedListener() {
-            @Override
-            public void onSwiped(final int position, int direction) {
-                Call<Void> call = api.registerOrder("Token " + token,
-                        adapter.getData().get(position).getId());
-                call.enqueue(new Callback<Void>() {
-                    int status;
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        status = response.code();
-                        if(status != 200){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            builder.setCancelable(false);
-                            builder.setTitle("Không thể nhận đơn hàng");
-                            builder.setMessage("Có vẻ như ai đó đã nhận đơn hàng này trước bạn," +
-                                    "hãy đảm bảo danh sách đơn hàng của bạn là mới nhất");
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                    fetchData();
-                                }
-                            });
-                            builder.show();
-                        }else {
-                            adapter.getData().remove(position);
-                            adapter.notifyItemRemoved(position);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setCancelable(false);
-                        builder.setTitle("Lỗi kết nối");
-                        builder.setMessage("Không thể kết nối tới máy chủ, vui lòng kiểm tra kết " +
-                                "nối internet của bạn.");
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        builder.show();
-                    }
-                });
             }
         });
     }

@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RESTfulApi {
 
-    private static String baseUrl = "http://192.168.43.206";
+    private static String baseUrl = "http://192.168.15.45";
     private static ApiInterface instance = null;
 
     public static ApiInterface getApi(){

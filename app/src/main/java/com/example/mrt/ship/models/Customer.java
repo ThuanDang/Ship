@@ -5,9 +5,7 @@ package com.example.mrt.ship.models;
  */
 public class Customer {
     private int id;
-    private String name;
-    private String phone;
-    private String address;
+    private User users;
 
     public int getId() {
         return id;
@@ -17,27 +15,11 @@ public class Customer {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public User getUsers() {
+        return users;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
+    public void setUsers(User users) {
+        this.users = users;
     }
 }

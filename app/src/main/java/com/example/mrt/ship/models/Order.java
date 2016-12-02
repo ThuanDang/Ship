@@ -1,23 +1,30 @@
 package com.example.mrt.ship.models;
 
-import java.util.List;
 
 /**
  * Created by mrt on 15/10/2016.
  */
 
-public class Order {
+public class Order{
+
     private int id;
     private String name;
-    private Location from_address;
-    private Location to_address;
-    private String description;
-    private double price;
+    private int status;
+    private int type;
     private double ship_cost;
-    private String status;
-    private List<Type> types;
-    private Customer owner;
+    private double price;
+    private WareHouse ware_house;
+    private Recipient recipient;
+    private Commodity commodities;
+    private Customer customer;
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
     public int getId() {
         return id;
@@ -35,28 +42,20 @@ public class Order {
         this.name = name;
     }
 
-    public Location getFrom_address() {
-        return from_address;
+    public WareHouse getWare_house() {
+        return ware_house;
     }
 
-    public void setFrom_address(Location from_address) {
-        this.from_address = from_address;
+    public void setWare_house(WareHouse ware_house) {
+        this.ware_house = ware_house;
     }
 
-    public Location getTo_address() {
-        return to_address;
+    public Recipient getRecipient() {
+        return recipient;
     }
 
-    public void setTo_address(Location to_address) {
-        this.to_address = to_address;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setRecipient(Recipient recipient) {
+        this.recipient = recipient;
     }
 
     public double getPrice() {
@@ -75,27 +74,27 @@ public class Order {
         this.ship_cost = ship_cost;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public List<Type> getTypes() {
-        return types;
+    public int getType() {
+        return type;
     }
 
-    public void setTypes(List<Type> types) {
-        this.types = types;
+    public void setType(int type) {
+        this.type = type;
     }
 
-    public Customer getOwner() {
-        return owner;
+    public Commodity getCommodities() {
+        return commodities;
     }
 
-    public void setOwner(Customer owner) {
-        this.owner = owner;
+    public void setCommodities(Commodity commodities) {
+        this.commodities = commodities;
     }
 }

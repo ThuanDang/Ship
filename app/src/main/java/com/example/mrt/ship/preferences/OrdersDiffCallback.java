@@ -40,7 +40,8 @@ public class OrdersDiffCallback extends DiffUtil.Callback{
         Order oldOrder = oldList.get(oldItemPosition);
         Order newOrder = newList.get(newItemPosition);
         return Objects.equals(oldOrder.getName(), newOrder.getName())
-                && Objects.equals(oldOrder.getTo_address().getName(), newOrder.getTo_address().getName())
+                && Objects.equals(oldOrder.getWare_house().getAddress(),
+                newOrder.getRecipient().getAddress())
                 && oldOrder.getShip_cost() == newOrder.getShip_cost();
     }
 }
