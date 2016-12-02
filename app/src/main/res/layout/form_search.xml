@@ -20,18 +20,18 @@
         android:textSize="16sp"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="sans-serif-medium"
         android:text="@string/search"
         android:maxLines="1"
-        android:textColor="@color/icon_light_inactive"
+        android:textColor="@color/text_hint_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <View
         android:layout_below="@+id/a"
-        android:background="@color/icon_light_inactive"
+        android:background="@color/text_hint_color"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="36dp"
-        android:layout_height="1dp"
+        android:layout_height="1.5dp"
         android:layout_width="match_parent"/>
     <ImageView
         android:src="@drawable/ic_chim_small"

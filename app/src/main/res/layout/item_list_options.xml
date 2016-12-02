@@ -15,10 +15,12 @@
         android:layout_height="48dp" />
     <TextView
         android:id="@+id/name_option"
+        android:fontFamily="sans-serif"
+        android:textSize="16sp"
         android:layout_marginStart="24dp"
         android:layout_toEndOf="@+id/icon_option"
         android:layout_centerVertical="true"
-        android:textColor="@color/black_text"
+        android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </RelativeLayout>

@@ -14,17 +14,6 @@
             layout="@layout/form_search"/>
         <include
             layout="@layout/form_title"/>
-        <!--<TextView
-            android:id="@+id/title"
-            android:background="@color/title_background_color"
-            android:textColor="@color/black_text"
-            android:fontFamily="sans-serif-light"
-            android:textSize="16sp"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="48dp" />-->
         <View
             android:background="@drawable/shadow2"
             android:layout_width="match_parent"

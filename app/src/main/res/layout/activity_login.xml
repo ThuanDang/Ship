@@ -72,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textColorHint="@color/teal400"
+                    android:textColorHint="@color/text_hint_color"
                     android:hint="@string/prompt_username"
                     android:inputType="textNoSuggestions"
                     android:imeOptions="actionNext"
@@ -85,7 +85,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
-                    android:textColorHint="@color/teal400"
+                    android:textColorHint="@color/text_hint_color"
                     android:hint="@string/prompt_password"
                     android:inputType="textPassword"
                     android:maxLines="1" />
