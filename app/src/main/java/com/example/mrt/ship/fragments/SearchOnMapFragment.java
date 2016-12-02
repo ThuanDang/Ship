@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -14,12 +15,14 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.CustomWindowAdapter;
+import com.example.mrt.ship.models.Location;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
-import com.example.mrt.ship.models.WareHouse;
 import com.example.mrt.ship.networks.ApiInterface;
 import com.example.mrt.ship.networks.RESTfulApi;
 import com.example.mrt.ship.utils.MapUtils;
@@ -29,10 +32,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -58,6 +64,13 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     private Handler handler = new Handler();
     private Context context;
 
+    private SeekBar radius;
+    private TextView text_radius;
+    private double r = 1;
+
+    List<Marker> markers;
+    Circle circle;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +78,8 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
         api = RESTfulApi.getApi();
         token = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString("token", "");
+        markers = new ArrayList<>();
+        data = new ArrayList<>();
     }
 
     @Nullable
@@ -77,6 +92,38 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
         SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         fragment.getMapAsync(this);
+
+        radius = (SeekBar)view.findViewById(R.id.seek_bar);
+        text_radius = (TextView)view.findViewById(R.id.text_radius);
+        radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                r = seekBar.getProgress()/5.0;
+                text_radius.setText(r + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                r = seekBar.getProgress()/5.0;
+
+
+                if(r == 0){
+
+                    if(map != null){
+                        map.clear();
+                        markers.clear();
+                    }
+                    return;
+                }
+
+                fetchData();
+            }
+        });
         return view;
     }
 
@@ -85,7 +132,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
         map = googleMap;
         LatLng HUST = new LatLng(21.005744, 105.843348);
         CameraUpdate init = CameraUpdateFactory.newLatLngZoom(HUST, 13);
-        map.animateCamera(init);
+        map.moveCamera(init);
 
 
         map.setInfoWindowAdapter(new CustomWindowAdapter(getActivity().getLayoutInflater()));
@@ -142,12 +189,32 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
         if(myLocation != null){
             Call<List<Order>> call = api.searchOnMap("Token " + token,
                     myLocation.getLatitude(),
-                    myLocation.getLongitude());
+                    myLocation.getLongitude(), r);
+
             //move camera to my location
             CameraUpdate cameraUpdate = CameraUpdateFactory
                     .newLatLngZoom(new LatLng(myLocation.getLatitude(),
-                            myLocation.getLongitude()), 15);
-            map.animateCamera(cameraUpdate, 450, null);
+                            myLocation.getLongitude()), 14);
+            map.animateCamera(cameraUpdate, 350, null);
+
+            // draw circle with radius
+            if(circle != null){
+                circle.remove();
+                circle = map.addCircle(new CircleOptions()
+                        .center(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()))
+                        .radius(r*1000)
+                        .strokeWidth(1)
+                        .strokeColor(Color.argb(100, 100, 181, 246))
+                        .fillColor(Color.argb(60, 100, 181, 246)));
+            }else {
+                circle = map.addCircle(new CircleOptions()
+                        .center(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()))
+                        .radius(r*1000)
+                        .strokeWidth(1)
+                        .strokeColor(Color.argb(100, 100, 181, 246))
+                        .fillColor(Color.argb(60, 100, 181, 246)));
+            }
+
 
             call.enqueue(new Callback<List<Order>>() {
                 int status;
@@ -161,23 +228,56 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                     }else {
                         if(data != null){
                             mListener.countOrders(data.size(), 2);
-                            map.clear();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    for(Order item: data){
-                                        WareHouse address = item.getWare_house();
-                                        Marker marker = map.addMarker(new MarkerOptions()
-                                                .position(new LatLng(address.getLatitude(),
-                                                        address.getLongitude()))
-                                                .title(item.getName())
-                                                .snippet(address.getName())
-                                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker)));
-                                        MapUtils.dropPinEffect(marker);
+                                    int time = 0;
+                                    boolean next;
+                                    for(final Order item: data){
+                                        next = false;
+                                        final Location address = item.getFrom_address().getLocation();
+                                        final LatLng latLng = new LatLng(address.getLatitude(),
+                                                address.getLongitude());
+                                        for(Marker marker: markers){
+                                            if(marker.getPosition().equals(latLng)){
+                                                next = true;
+                                                marker.setTag(1);
+                                                break;
+                                            }
+                                        }
+                                        if(next) continue;
+
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Marker marker = map.addMarker(new MarkerOptions()
+                                                        .position(latLng)
+                                                        .title(item.getName())
+                                                        .snippet(address.getAddress())
+                                                        .icon(BitmapDescriptorFactory.fromResource(
+                                                                R.drawable.ic_marker))
+                                                );
+                                                markers.add(marker);
+                                                MapUtils.dropPinEffect(marker);
+                                            }
+                                        }, time+=150);
+
+                                    }
+                                    List<Marker> delete = new ArrayList<>();
+                                    for(Marker marker: markers){
+                                        if(marker.getTag() == null){
+                                            marker.remove();
+                                            delete.add(marker);
+                                        }
+                                    }
+                                    markers.removeAll(delete);
+                                    for(Marker marker: markers){
+                                        marker.setTag(null);
                                     }
                                 }
-                            }, 500);
+                            }, 400);
                         }
+
                     }
                 }
 

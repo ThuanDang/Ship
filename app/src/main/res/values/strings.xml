@@ -30,6 +30,7 @@
         xin vui lòng kiểm ra lại kết nối internet của bạn.</string>
     <string name="complete">Hoàn thành</string>
     <string name="plan">Lịch trình</string>
+    <string name="radius">1 km</string>
 
 
     <string-array name="svg_strings">
