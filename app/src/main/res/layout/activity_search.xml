@@ -9,6 +9,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_search"
             app:theme="@style/AppTheme.AppBarOverlay"
+            android:elevation="2dp"
             android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="48dp">
@@ -30,20 +31,20 @@
                     android:textSize="16sp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="8dp"
-                    android:fontFamily="sans-serif-light"
+                    android:fontFamily="sans-serif-medium"
                     android:inputType="textNoSuggestions"
                     android:textColor="@color/white"
                     android:background="@android:color/transparent"
                     android:maxLines="1"
                     android:hint="@string/search"
-                    android:textColorHint="@color/icon_light_inactive"
+                    android:textColorHint="@color/text_hint_color"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <View
                     android:layout_below="@+id/a"
-                    android:background="@color/icon_light_inactive"
+                    android:background="#ffffff"
                     android:layout_marginTop="6dp"
-                    android:layout_height="1dp"
+                    android:layout_height="1.5dp"
                     android:layout_width="match_parent"/>
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>

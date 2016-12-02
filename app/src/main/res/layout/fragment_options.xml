@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/white"
+    android:background="@color/grey100"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -53,9 +53,11 @@
             android:layout_height="48dp" />
         <TextView
             android:layout_marginStart="24dp"
+            android:fontFamily="sans-serif"
             android:layout_toEndOf="@+id/ic"
+            android:textSize="16sp"
             android:layout_centerVertical="true"
-            android:textColor="@color/black_text"
+            android:textColor="@color/black"
             android:layout_gravity="center_vertical"
             android:text="@string/get_notifications"
             android:layout_width="wrap_content"

@@ -23,7 +23,7 @@
     <string name="error">Không thể kết nối</string>
     <string name="sub_error">Chạm để thử lại</string>
     <string name="search">Tìm kiếm</string>
-    <string name="get_notifications">Nhận thông báo đơn hàng mới</string>
+    <string name="get_notifications">Nhận thông báo đơn hàng</string>
 
     <string name="connect_error_title">Lỗi kết nối</string>
     <string name="connect_error_message">Rất tiếc không thể kết nối tới máy chủ,

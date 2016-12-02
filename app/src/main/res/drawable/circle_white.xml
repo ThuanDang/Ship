@@ -2,6 +2,10 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <solid
+<<<<<<< HEAD
         android:color="#ffffff"/>
+=======
+        android:color="@color/grey100"/>
+>>>>>>> bkship/master
 
 </shape>

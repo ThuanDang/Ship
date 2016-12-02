@@ -11,7 +11,7 @@
 
     <style name="AppTheme.NoActionBar.ColorAccent">
         <item name="colorAccent">#ffffff</item>
-        <item name="colorControlNormal">@color/teal400</item>
+        <item name="colorControlNormal">@color/text_hint_color</item>
 
     </style>
 
