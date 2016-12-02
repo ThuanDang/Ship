@@ -140,12 +140,12 @@ public class OrdersFragment extends Fragment {
             @Override
             public void onLoadMore(final int position) {
                 final List<Order> adapterData = adapter.getData();
-                if(getJson.getNext() != null){
+                if(getJson.getNext_page_url() != null){
                     // show progress bar
                     adapterData.add(position, null);
                     adapter.notifyItemInserted(position);
 
-                    Call<GetJson> call = api.getListOrderMore("Token " + token, getJson.getNext());
+                    Call<GetJson> call = api.getListOrderMore("Bearer " + token, getJson.getNext_page_url());
                     call.enqueue(new Callback<GetJson>() {
                         int status;
                         @Override
@@ -166,10 +166,10 @@ public class OrdersFragment extends Fragment {
                                 adapter.getData().remove(adapterData.size() - 1);
                                 adapter.notifyItemRemoved(adapter.getData().size());
                                 // notify data change
-                                data.addAll(getJson.getResults());
+                                data.addAll(getJson.getData());
                                 adapter.swapItems(data);
 
-                                fragmentListener.countOrders(getJson.getCount(), 0);
+                                fragmentListener.countOrders(getJson.getTotal(), 0);
                             }
                         }
 
@@ -279,7 +279,7 @@ public class OrdersFragment extends Fragment {
 
     public void fetchData(){
 
-        Call<GetJson> call = api.getListOrder("Token " + token);
+        Call<GetJson> call = api.getListOrder("Bearer " + token);
 
         call.enqueue(new Callback<GetJson>() {
             int status;
@@ -292,7 +292,7 @@ public class OrdersFragment extends Fragment {
                     showError(true);
                 }else {
                     if(getJson != null){
-                        data = getJson.getResults();
+                        data = getJson.getData();
                         adapter.swapItems(data);
 
                         handler.postDelayed(new Runnable() {
@@ -302,7 +302,7 @@ public class OrdersFragment extends Fragment {
                             }
                         }, 300);
 
-                        fragmentListener.countOrders(getJson.getCount(), 0);
+                        fragmentListener.countOrders(getJson.getTotal(), 0);
 
                     }
                 }

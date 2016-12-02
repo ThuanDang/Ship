@@ -202,7 +202,7 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             name_order.setText(order.getName());
             place_receiver.setText(order.getWare_house().getAddress());
             place_delivery.setText(order.getRecipient().getAddress());
-            ship_cost.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
+            ship_cost.setText(FormatUtils.formatCurrency(order.getShip_cost(), FormatUtils.VN));
             deposit.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
 
             // Set random color icon

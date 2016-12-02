@@ -51,7 +51,7 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         //Member variable of itemView
         View image_order;
         TextView text_image_order, name_order, place_receiver, place_delivery,
-                ship_cost;
+                ship_cost, deposit;
 
         OrderVH(final View itemView) {
             super(itemView);
@@ -61,6 +61,8 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             place_receiver = (TextView)itemView.findViewById(R.id.place_receiver);
             place_delivery = (TextView)itemView.findViewById(R.id.place_delivery);
             ship_cost = (TextView)itemView.findViewById(R.id.ship_cost);
+            deposit = (TextView)itemView.findViewById(R.id.deposit);
+
             // Setup the click listener
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -96,12 +98,14 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             TextView place_receiver = vh.place_receiver;
             TextView place_delivery = vh.place_delivery;
             TextView ship_cost = vh.ship_cost;
+            TextView deposit = vh.deposit;
 
             text_image_order.setText(String.valueOf(position + 1));
             name_order.setText(order.getName());
             place_receiver.setText(order.getWare_house().getAddress());
             place_delivery.setText(order.getRecipient().getAddress());
-            ship_cost.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.US));
+            ship_cost.setText(FormatUtils.formatCurrency(order.getShip_cost(), FormatUtils.VN));
+            deposit.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
             // Set random color icon
             Drawable background = image_order.getBackground();
             int[] androidColors = context.getResources().getIntArray(R.array.androidcolors);

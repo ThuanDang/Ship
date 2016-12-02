@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,9 @@ import android.widget.TextView;
 
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.CustomWindowAdapter;
-import com.example.mrt.ship.models.Location;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
+import com.example.mrt.ship.models.WareHouse;
 import com.example.mrt.ship.networks.ApiInterface;
 import com.example.mrt.ship.networks.RESTfulApi;
 import com.example.mrt.ship.utils.MapUtils;
@@ -187,7 +188,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
 
     public void fetchData(){
         if(myLocation != null){
-            Call<List<Order>> call = api.searchOnMap("Token " + token,
+            Call<List<Order>> call = api.searchOnMap("Bearer " + token,
                     myLocation.getLatitude(),
                     myLocation.getLongitude(), r);
 
@@ -235,11 +236,13 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                                     boolean next;
                                     for(final Order item: data){
                                         next = false;
-                                        final Location address = item.getFrom_address().getLocation();
+                                        final WareHouse address = item.getWare_house();
                                         final LatLng latLng = new LatLng(address.getLatitude(),
                                                 address.getLongitude());
+                                        Log.d("test", "run: " + latLng.latitude + latLng.longitude);
                                         for(Marker marker: markers){
                                             if(marker.getPosition().equals(latLng)){
+                                                Log.d("test", "run: ");
                                                 next = true;
                                                 marker.setTag(1);
                                                 break;
@@ -257,6 +260,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                                                         .icon(BitmapDescriptorFactory.fromResource(
                                                                 R.drawable.ic_marker))
                                                 );
+                                                Log.d("test", "run: dfdfdfdf");
                                                 markers.add(marker);
                                                 MapUtils.dropPinEffect(marker);
                                             }
