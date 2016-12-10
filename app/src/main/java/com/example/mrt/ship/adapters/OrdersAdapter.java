@@ -1,46 +1,46 @@
 package com.example.mrt.ship.adapters;
 
-import android.content.ClipData;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.mrt.ship.R;
-
 import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 import com.example.mrt.ship.models.Order;
-import com.example.mrt.ship.networks.GetJson;
-import com.example.mrt.ship.networks.RESTfulApi;
+
 import com.example.mrt.ship.preferences.OrdersDiffCallback;
-import com.example.mrt.ship.utils.FormatUtils;
+import com.example.mrt.ship.utils.FormatUtil;
 
 
 import java.util.List;
 import java.util.Random;
 
-import retrofit2.Call;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
  * Created by mrt on 15/10/2016.
- * RecyclerView Adapter for OrdersFragment
+ * RecyclerView Adapter for OrdersWaitingFragment
  */
 
 // Create adapter extends RecyclerView.Adapter with specific ViewHolder
-public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements ItemTouchHelperAdapter {
     private List<Order> data;
     private Context context;
     private SwipeRefreshLayout refresh;
     private boolean noRefresh = true;
+
     // Interface click item
     private static OnItemClickListener click_listener;
     private static OnItemSwipedListener swiped_listener;
@@ -70,7 +70,7 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onItemDismiss(int position, int direction) {
-        if(direction == ItemTouchHelper.RIGHT){
+        if(direction == 32){
             swiped_listener.onSwiped(position, direction);
         }
         else {
@@ -88,10 +88,9 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-   
 
     // constructor
-    public RcvOrdersAdapter(Context context, List<Order> data, SwipeRefreshLayout refresh){
+    public OrdersAdapter(Context context, List<Order> data, SwipeRefreshLayout refresh){
         this.context = context;
         this.data = data;
         this.refresh = refresh;
@@ -120,21 +119,20 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private static class OrderVH extends RecyclerView.ViewHolder{
-        //Member variable of itemView
-        View image_order;
-        TextView text_image_order, name_order, place_receiver, place_delivery,
-        ship_cost, deposit;
+    public static class OrderVH extends RecyclerView.ViewHolder{
+
+        @BindView(R.id.icon_order) View image_order;
+        @BindView(R.id.text_image_oder) TextView text_image_order;
+        @BindView(R.id.name_order) TextView name_order;
+        @BindView(R.id.place_receiver) TextView place_receiver;
+        @BindView(R.id.place_delivery) TextView place_delivery;
+        @BindView(R.id.ship_cost) TextView ship_cost;
+        @BindView(R.id.deposit) TextView deposit;
 
         OrderVH(final View itemView) {
             super(itemView);
-            text_image_order = (TextView)itemView.findViewById(R.id.text_image_oder);
-            image_order = itemView.findViewById(R.id.icon_order);
-            name_order = (TextView)itemView.findViewById(R.id.name_order);
-            place_receiver = (TextView)itemView.findViewById(R.id.place_receiver);
-            place_delivery = (TextView)itemView.findViewById(R.id.place_delivery);
-            ship_cost = (TextView)itemView.findViewById(R.id.ship_cost);
-            deposit = (TextView)itemView.findViewById(R.id.deposit);
+            ButterKnife.bind(this, itemView);
+
             // Setup the click listener
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -167,17 +165,16 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         LayoutInflater inflater = LayoutInflater.from(context);
         if(viewType == 1){
-            View view = inflater.inflate(R.layout.item_list_order, parent, false);
+            View view = inflater.inflate(com.example.mrt.ship.R.layout.item_list_order, parent, false);
             return new OrderVH(view);
         }else if (viewType == 0){
-            View view = inflater.inflate(R.layout.item_progress, parent, false);
+            View view = inflater.inflate(com.example.mrt.ship.R.layout.item_progress, parent, false);
             return new ProgressVH(view);
         }else {
-            View view = inflater.inflate(R.layout.form_error, parent, false);
+            View view = inflater.inflate(com.example.mrt.ship.R.layout.form_error, parent, false);
             view.setVisibility(View.VISIBLE);
             return new ErrorVH(view);
         }
-
 
     }
 
@@ -198,12 +195,13 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             TextView ship_cost = vh.ship_cost;
             TextView deposit = vh.deposit;
 
-            text_image_order.setText(order.getName().substring(0, 1));
+            text_image_order.setText(
+                    order.getName().isEmpty()?"": FormatUtil.deAccent(order.getName().substring(0, 1)));
             name_order.setText(order.getName());
             place_receiver.setText(order.getWare_house().getAddress());
             place_delivery.setText(order.getRecipient().getAddress());
-            ship_cost.setText(FormatUtils.formatCurrency(order.getShip_cost(), FormatUtils.VN));
-            deposit.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
+            ship_cost.setText(FormatUtil.formatCurrency(order.getShip_cost(), FormatUtil.VN));
+            deposit.setText(FormatUtil.formatCurrency(order.getPrice(), FormatUtil.VN));
 
             // Set random color icon
             Drawable background = image_order.getBackground();
@@ -211,8 +209,6 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
             ((GradientDrawable)background).setColor(randomAndroidColor);
         }
-
-
     }
 
     @Override
@@ -221,14 +217,10 @@ public class RcvOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void swapItems(List<Order> orders) {
-        // compute diffs
         final OrdersDiffCallback diffCallback = new OrdersDiffCallback(this.data, orders);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-
-        // clear and add
         this.data = orders;
-
-        diffResult.dispatchUpdatesTo(this); // calls adapter's notify methods after diff is computed
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public List<Order> getData() {

@@ -3,6 +3,8 @@ package com.example.mrt.ship.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,30 +12,35 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.mrt.ship.R;
-import com.example.mrt.ship.adapters.RcvOrdersAdapter;
+import com.example.mrt.ship.activities.DetailOrderActivity;
+import com.example.mrt.ship.adapters.OrdersAdapter;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.interfaces.EndlessRecyclerViewScrollerListener;
-import com.example.mrt.ship.interfaces.HideScrollListener;
+import com.example.mrt.ship.interfaces.HideViewScrollerListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
+import com.example.mrt.ship.networks.MyApi;
+import com.example.mrt.ship.networks.Token;
 import com.example.mrt.ship.preferences.ItemTouchHelperCallback;
-import com.example.mrt.ship.preferences.SpacesItemDecoration;
-import com.example.mrt.ship.networks.ApiInterface;
-import com.example.mrt.ship.networks.GetJson;
-import com.example.mrt.ship.networks.RESTfulApi;
+import com.example.mrt.ship.networks.Result;
 import com.example.mrt.ship.preferences.SpacesItemDecorationPaddingTop;
+import com.example.mrt.ship.utils.DialogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,17 +49,16 @@ import retrofit2.Response;
  * Created by mrt on 14/10/2016.
  */
 
-public class OrdersFragment extends Fragment {
-    
-    private SwipeRefreshLayout swipeRefresh;
-    private RecyclerView rvOrderList;
-    private ProgressBar progressBar;
-    private View errorForm;
-    
-    private ApiInterface api;
-    private GetJson getJson;
-    private String token;
-    private RcvOrdersAdapter adapter;
+public class OrdersWaitingFragment extends Fragment {
+
+    @BindView(R.id.refresh) SwipeRefreshLayout refresh;
+    @BindView(R.id.list) RecyclerView orders;
+    @BindView(R.id.progress) ProgressBar progress;
+    @BindView(R.id.error) View error;
+
+
+    private Result result;
+    private OrdersAdapter adapter;
     private List<Order> data;
     private OnFragmentOrdersListener fragmentListener;
     private EndlessRecyclerViewScrollerListener endlessListener;
@@ -63,22 +69,16 @@ public class OrdersFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         data = new ArrayList<>();
-        api = RESTfulApi.getApi();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        token = preferences.getString("token", "");
+
     }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_orders, container, false);
-        
-        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipe_orders);
-        progressBar = (ProgressBar)view.findViewById(R.id.progress);
-        errorForm = view.findViewById(R.id.error_form);
-        rvOrderList = (RecyclerView)view.findViewById(R.id.list_order);
-        
+        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_orders, container, false);
+        ButterKnife.bind(this, view);
+
         setList();
         setError();
         setSwipeRefresh();
@@ -109,18 +109,18 @@ public class OrdersFragment extends Fragment {
 //---------------------------------------------------------------------------------------------
 
     public void setList(){
-        adapter = new RcvOrdersAdapter(getContext(), data, swipeRefresh);
-        rvOrderList.setAdapter(adapter);
-        rvOrderList.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvOrderList.setHasFixedSize(true);
-        rvOrderList.addItemDecoration(new SpacesItemDecorationPaddingTop(getContext(), 10, 48));
+        adapter = new OrdersAdapter(getContext(), data, refresh);
+        orders.setAdapter(adapter);
+        orders.setLayoutManager(new LinearLayoutManager(getContext()));
+        orders.setHasFixedSize(true);
+        orders.addItemDecoration(new SpacesItemDecorationPaddingTop(getContext(), 10, 48));
 
         ItemTouchHelper touchHelper = new ItemTouchHelper(
                 new ItemTouchHelperCallback(adapter, getContext(), true, false));
-        touchHelper.attachToRecyclerView(rvOrderList);
+        touchHelper.attachToRecyclerView(orders);
 
         // set hide tab
-        rvOrderList.addOnScrollListener(new HideScrollListener() {
+        orders.addOnScrollListener(new HideViewScrollerListener() {
             @Override
             public void onHide() {
                 fragmentListener.hideTab();
@@ -136,22 +136,23 @@ public class OrdersFragment extends Fragment {
 
         // set load more
         endlessListener = new EndlessRecyclerViewScrollerListener(
-                (LinearLayoutManager)rvOrderList.getLayoutManager(), adapter) {
+                (LinearLayoutManager)orders.getLayoutManager(), adapter) {
             @Override
             public void onLoadMore(final int position) {
                 final List<Order> adapterData = adapter.getData();
-                if(getJson.getNext_page_url() != null){
+                if(result.getNext_page_url() != null){
                     // show progress bar
                     adapterData.add(position, null);
                     adapter.notifyItemInserted(position);
 
-                    Call<GetJson> call = api.getListOrderMore("Bearer " + token, getJson.getNext_page_url());
-                    call.enqueue(new Callback<GetJson>() {
+                    Call<Result> call = MyApi.getInstance()
+                            .loadMoreOrder(Token.share(getContext()), result.getNext_page_url());
+                    call.enqueue(new Callback<Result>() {
                         int status;
                         @Override
-                        public void onResponse(Call<GetJson> call, Response<GetJson> response) {
+                        public void onResponse(Call<Result> call, Response<Result> response) {
                             status = response.code();
-                            getJson = response.body();
+                            result = response.body();
 
                             if(status != 200){
                                 // remove progress bar and add error
@@ -161,20 +162,18 @@ public class OrdersFragment extends Fragment {
                                 adapter.notifyItemInserted(position);
                             }
 
-                            else if(getJson != null){
+                            else if(result != null){
                                 // remove progress bar
                                 adapter.getData().remove(adapterData.size() - 1);
                                 adapter.notifyItemRemoved(adapter.getData().size());
                                 // notify data change
-                                data.addAll(getJson.getData());
+                                data.addAll(result.getData());
                                 adapter.swapItems(data);
-
-                                fragmentListener.countOrders(getJson.getTotal(), 0);
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<GetJson> call, Throwable t) {
+                        public void onFailure(Call<Result> call, Throwable t) {
                             // remove progress bar and add error
                             adapterData.remove(adapterData.size() - 1);
                             adapter.notifyItemRemoved(adapter.getData().size());
@@ -185,12 +184,17 @@ public class OrdersFragment extends Fragment {
                 }
             }
         };
-        rvOrderList.addOnScrollListener(endlessListener);
+        orders.addOnScrollListener(endlessListener);
 
         // set click for item in recycler view
-        adapter.setOnItemClickListener(new RcvOrdersAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new OrdersAdapter.OnItemClickListener() {
             @Override
             public void onItemOrderClick(View itemView, int position) {
+                Intent intent = new Intent(getActivity(), DetailOrderActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order", adapter.getData().get(position));
+                intent.putExtras(bundle);
+                startActivity(intent);
 
             }
 
@@ -201,12 +205,45 @@ public class OrdersFragment extends Fragment {
                 endlessListener.onLoadMore(position);
             }
         });
+
+        adapter.setOnItemSwipedListener(new OrdersAdapter.OnItemSwipedListener() {
+            @Override
+            public void onSwiped(final int position, int direction) {
+                Call<Void> call = MyApi.getInstance().receiveOrder(Token.share(getContext()),
+                        adapter.getData().get(position).getId());
+                call.enqueue(new Callback<Void>() {
+                    int status;
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        status = response.code();
+                        if(status != 200){
+                            DialogUtil.conflictReceiveOrder(getContext(), new DialogUtil.Callback() {
+                                @Override
+                                public void onPositiveButtonClick() {
+                                    fetchData();
+                                }
+                            });
+                            adapter.notifyItemChanged(position);
+                        }else {
+                            adapter.getData().remove(position);
+                            adapter.notifyItemRemoved(position);
+                            fetchData();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        DialogUtil.connectError(getContext());
+                    }
+                });
+            }
+        });
     }
 
 //---------------------------------------------------------------------------------------------
 
     public void setError(){
-        errorForm.setOnClickListener(new View.OnClickListener() {
+        error.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showProgress(true);
@@ -220,49 +257,49 @@ public class OrdersFragment extends Fragment {
 
     public void setSwipeRefresh(){
         // Setup refresh endlessListener which triggers new data loading
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 fetchData();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefresh.setRefreshing(false);
+                        refresh.setRefreshing(false);
                     }
-                }, 400);
+                }, 500);
 
             }
         });
         // Configure the refreshing colors
-        swipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark,
+        refresh.setColorSchemeResources(com.example.mrt.ship.R.color.colorPrimaryDark,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         // Set margin to top
-        swipeRefresh.setProgressViewOffset(false, 0, 120);
+        refresh.setProgressViewOffset(false, 0, 120);
     }
 
 //----------------------------------------------------------------------------------------------
 
     private void showProgress(final boolean show) {
-        if(progressBar.isShown() != show){
+        if(progress.isShown() != show){
             int shortAnimTime = 300;
-            swipeRefresh.setEnabled(!show);
-            rvOrderList.setVisibility(show ? View.GONE : View.VISIBLE);
-            rvOrderList.animate().setDuration(shortAnimTime).alpha(
+            refresh.setEnabled(!show);
+            orders.setVisibility(show ? View.GONE : View.VISIBLE);
+            orders.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    rvOrderList.setVisibility(show ? View.GONE : View.VISIBLE);
+                    orders.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
-            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
+            progress.setVisibility(show ? View.VISIBLE : View.GONE);
+            progress.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                    progress.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         }
@@ -271,28 +308,28 @@ public class OrdersFragment extends Fragment {
 //-------------------------------------------------------------------------------------------------
 
     public void showError(boolean show){
-        errorForm.setVisibility(show?View.VISIBLE:View.GONE);
-        errorForm.animate().alpha(show?1:0).setDuration(300);
+        error.setVisibility(show?View.VISIBLE:View.GONE);
+        error.animate().alpha(show?1:0).setDuration(300);
     }
 
 //-------------------------------------------------------------------------------------------------
 
     public void fetchData(){
 
-        Call<GetJson> call = api.getListOrder("Bearer " + token);
+        Call<Result> call = MyApi.getInstance().getListOrderWaiting(Token.share(getContext()));
 
-        call.enqueue(new Callback<GetJson>() {
+        call.enqueue(new Callback<Result>() {
             int status;
             @Override
-            public void onResponse(Call<GetJson> call, Response<GetJson> response) {
+            public void onResponse(Call<Result> call, Response<Result> response) {
                 status = response.code();
-                getJson = response.body();
+                result = response.body();
 
                 if(status != 200){
                     showError(true);
                 }else {
-                    if(getJson != null){
-                        data = getJson.getData();
+                    if(result != null){
+                        data = result.getData();
                         adapter.swapItems(data);
 
                         handler.postDelayed(new Runnable() {
@@ -302,14 +339,14 @@ public class OrdersFragment extends Fragment {
                             }
                         }, 300);
 
-                        fragmentListener.countOrders(getJson.getTotal(), 0);
+                        fragmentListener.countOrders(result.getTotal(), 0, true);
 
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<GetJson> call, Throwable t) {
+            public void onFailure(Call<Result> call, Throwable t) {
                 showError(true);
             }
         });

@@ -2,7 +2,7 @@ package com.example.mrt.ship.interfaces;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.mrt.ship.adapters.RcvOrdersAdapter;
+import com.example.mrt.ship.adapters.OrdersAdapter;
 
 
 /**
@@ -13,11 +13,11 @@ public abstract class EndlessRecyclerViewScrollerListener extends RecyclerView.O
     private int visibleThreshold = 0;
     private int previousTotalItemCount = 0;
     private boolean loading = true;
-    private RcvOrdersAdapter adapter;
+    private OrdersAdapter adapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     public EndlessRecyclerViewScrollerListener(LinearLayoutManager layoutManager,
-                                               RcvOrdersAdapter adapter) {
+                                               OrdersAdapter adapter) {
         this.mLayoutManager = layoutManager;
         this.adapter = adapter;
     }

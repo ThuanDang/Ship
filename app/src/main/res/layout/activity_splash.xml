@@ -6,7 +6,7 @@
     android:background="@color/splash_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.SplashActivity">
+    tools:context="com.example.mrt.ship.activities.SplashActivity">
 
         <com.jrummyapps.android.widget.AnimatedSvgView
             android:id="@+id/animated_svg_view"

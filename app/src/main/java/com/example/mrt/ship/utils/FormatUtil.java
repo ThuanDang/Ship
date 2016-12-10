@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * Created by mrt on 27/10/2016.
  */
 
-public class FormatUtils {
+public class FormatUtil {
     public static final String VN = "VND";
     public static final String US = "USD";
 

@@ -4,9 +4,5 @@
     <corners
         android:radius="18dp"/>
     <solid
-<<<<<<< HEAD
-        android:color="#ffffff"/>
-=======
         android:color="@color/grey100"/>
->>>>>>> bkship/master
 </shape>

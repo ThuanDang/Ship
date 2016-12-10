@@ -1,16 +1,19 @@
 package com.example.mrt.ship.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by mrt on 28/11/2016.
  */
 
-public class Recipient {
+public class Recipient implements Parcelable {
     private int id;
     private String name;
     private String phone;
     private String address;
     private double latitude;
-    private double longitude;
+    private double longtitude;
 
 
     public int getId() {
@@ -54,10 +57,43 @@ public class Recipient {
     }
 
     public double getLongitude() {
-        return longitude;
+        return longtitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLongtitude(double longtitude) {
+        this.longtitude = longtitude;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.address);
+        dest.writeDouble(this.latitude);
+        dest.writeDouble(this.longtitude);
+    }
+
+    public Recipient() {
+    }
+
+    protected Recipient(Parcel in) {
+        this.address = in.readString();
+        this.latitude = in.readDouble();
+        this.longtitude = in.readDouble();
+    }
+
+    public static final Parcelable.Creator<Recipient> CREATOR = new Parcelable.Creator<Recipient>() {
+        @Override
+        public Recipient createFromParcel(Parcel source) {
+            return new Recipient(source);
+        }
+
+        @Override
+        public Recipient[] newArray(int size) {
+            return new Recipient[size];
+        }
+    };
 }

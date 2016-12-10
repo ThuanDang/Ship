@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "618808499004",
+    "firebase_url": "https://intricate-idiom-142715.firebaseio.com",
+    "project_id": "intricate-idiom-142715",
+    "storage_bucket": "intricate-idiom-142715.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:618808499004:android:6e3b7e0424e8037d",
+        "android_client_info": {
+          "package_name": "com.example.mrt.ship"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "618808499004-s2jofc0d728u2sos1stt7ht76kr2et5n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0EP1M69HEbLG9nwuzl1GYFrNUOjuyHv8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

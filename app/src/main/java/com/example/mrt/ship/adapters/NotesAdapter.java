@@ -10,9 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.mrt.ship.R;
 import com.example.mrt.ship.preferences.NotesDiffCallback;
-import com.example.mrt.ship.utils.FontUtils;
+import com.example.mrt.ship.utils.FontUtil;
 import com.example.mrt.ship.models.Note;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.List;
  * Created by mrt on 16/10/2016.
  */
 
-public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHolder>{
+public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder>{
     private Context context;
     private List<Note> data = new ArrayList<>();
 
@@ -39,7 +38,7 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
     }
 
     // Constructor
-    public RcvNotesAdapter(Context context){
+    public NotesAdapter(Context context){
         this.context = context;
     }
 
@@ -49,10 +48,10 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
         TextView header_note, content_note, date_note, options;
         public ViewHolder(final View itemView) {
             super(itemView);
-            options = (TextView)itemView.findViewById(R.id.textViewOptions);
-            header_note = (TextView)itemView.findViewById(R.id.header_note);
-            content_note = (TextView)itemView.findViewById(R.id.content_note);
-            date_note = (TextView)itemView.findViewById(R.id.date_note);
+            options = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.textViewOptions);
+            header_note = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.header_note);
+            content_note = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.content_note);
+            date_note = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.date_note);
 
         }
     }
@@ -60,7 +59,7 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.item_list_note, parent, false);
+        View view = inflater.inflate(com.example.mrt.ship.R.layout.item_list_note, parent, false);
         return new ViewHolder(view);
     }
 
@@ -73,8 +72,8 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
         content_note = holder.content_note;
         date_note = holder.date_note;
         // Set typeface
-        FontUtils.from(context).applyFontToTextView(header_note, "Roboto-Light.ttf");
-        FontUtils.from(context).applyFontToTextView(content_note, "Roboto-Light.ttf");
+        FontUtil.from(context).applyFontToTextView(header_note, "Roboto-Light.ttf");
+        FontUtil.from(context).applyFontToTextView(content_note, "Roboto-Light.ttf");
         // Set text
         header_note.setText(data.get(position).getHeader());
         content_note.setText(data.get(position).getContent());
@@ -87,14 +86,14 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
                 //creating a popup menu
                 PopupMenu popup = new PopupMenu(context, options);
                 //inflating menu from xml resource
-                popup.inflate(R.menu.options_menu_note);
+                popup.inflate(com.example.mrt.ship.R.menu.options_menu_note);
                 //adding click listener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
 
-                            case R.id.delete_note:
+                            case com.example.mrt.ship.R.id.delete_note:
                                 // handle delete
                                 if(menu_listener != null){
                                     menu_listener.onDeleteClick(holder.getAdapterPosition());
@@ -102,7 +101,7 @@ public class RcvNotesAdapter extends RecyclerView.Adapter<RcvNotesAdapter.ViewHo
 
                                 break;
 
-                            case R.id.edit_note:
+                            case com.example.mrt.ship.R.id.edit_note:
                                 //handle update
                                 if(menu_listener != null){
                                     menu_listener.onUpdateClick(holder.getAdapterPosition());

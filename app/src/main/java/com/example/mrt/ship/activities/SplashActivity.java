@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.mrt.ship.R;
 import com.jrummyapps.android.widget.AnimatedSvgView;
 
 
@@ -16,10 +15,10 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        setContentView(com.example.mrt.ship.R.layout.activity_splash);
         final Intent intent1 = new Intent(this, LoginActivity.class);
         final Intent intent2 = new Intent(this, MainActivity.class);
-        svgView = (AnimatedSvgView) findViewById(R.id.animated_svg_view);
+        svgView = (AnimatedSvgView) findViewById(com.example.mrt.ship.R.id.animated_svg_view);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String token = preferences.getString("token", "");
@@ -43,7 +42,7 @@ public class SplashActivity extends AppCompatActivity {
                             startActivity(intent2);
                         }
                         SplashActivity.this.finish();
-                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        overridePendingTransition(com.example.mrt.ship.R.anim.fade_in, com.example.mrt.ship.R.anim.fade_out);
                     }
                 }
             });

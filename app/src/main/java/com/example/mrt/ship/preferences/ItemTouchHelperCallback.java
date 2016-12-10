@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
-import com.example.mrt.ship.R;
 import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 
 /**
@@ -75,6 +74,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         mAdapter.onItemDrag(isCurrentlyActive);
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             // Get RecyclerView item from the ViewHolder
+
             View itemView = viewHolder.itemView;
             float height = (float) itemView.getBottom() - (float) itemView.getTop();
             float width = height / 3;
@@ -86,7 +86,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                         (float) itemView.getBottom(), p);
 
                 Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
-                        R.drawable.add);
+                        com.example.mrt.ship.R.drawable.add);
                 RectF icon_dest = new RectF((float) itemView.getLeft() + width ,
                         (float) itemView.getTop() + width,
                         (float) itemView.getLeft()+ 2*width,
@@ -102,7 +102,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
 
                 Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
-                        R.drawable.remove);
+                        com.example.mrt.ship.R.drawable.remove);
                 RectF icon_dest = new RectF((float) itemView.getRight() - 2*width,
                         (float) itemView.getTop() + width,
                         (float) itemView.getRight() - width,

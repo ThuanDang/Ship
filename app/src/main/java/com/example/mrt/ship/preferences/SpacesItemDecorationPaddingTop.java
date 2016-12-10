@@ -5,7 +5,7 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.example.mrt.ship.utils.FormatUtils;
+import com.example.mrt.ship.utils.FormatUtil;
 
 /**
  * Created by mrt on 26/11/2016.
@@ -30,7 +30,7 @@ public class SpacesItemDecorationPaddingTop extends RecyclerView.ItemDecoration{
 
         // Add top margin only for the first item to avoid double space between items
         if (parent.getChildLayoutPosition(view) == 0) {
-            outRect.top = (int)FormatUtils.dipToPixels(context, top) + space;
+            outRect.top = (int) FormatUtil.dipToPixels(context, top) + space;
         } else {
             outRect.top = 0;
         }

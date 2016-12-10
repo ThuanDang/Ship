@@ -10,21 +10,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.mrt.ship.R;
-
 import java.util.Random;
 
 /**
  * Created by mrt on 22/11/2016.
  */
 
-public class RcvOptionsAdapter extends RecyclerView.Adapter<RcvOptionsAdapter.ViewHolder> {
+public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.ViewHolder> {
 
     private Context context;
     private int[] icons = {
-            R.drawable.ic_options_events, R.drawable.ic_options_note, R.drawable.ic_options_support,
-            R.drawable.ic_options_history, R.drawable.ic_options_share, R.drawable.ic_options_feedback,
-            R.drawable.ic_options_about, R.drawable.ic_options_logout,
+            com.example.mrt.ship.R.drawable.ic_options_events, com.example.mrt.ship.R.drawable.ic_options_note, com.example.mrt.ship.R.drawable.ic_options_support,
+            com.example.mrt.ship.R.drawable.ic_options_history, com.example.mrt.ship.R.drawable.ic_options_share, com.example.mrt.ship.R.drawable.ic_options_feedback,
+            com.example.mrt.ship.R.drawable.ic_options_about, com.example.mrt.ship.R.drawable.ic_options_logout,
 
 
     };
@@ -34,14 +32,14 @@ public class RcvOptionsAdapter extends RecyclerView.Adapter<RcvOptionsAdapter.Vi
             "Về chúng tôi", "Đăng xuất"
     };
 
-    public RcvOptionsAdapter(Context context){
+    public OptionsAdapter(Context context){
         this.context = context;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view  = inflater.inflate(R.layout.item_list_options, null);
+        View view  = inflater.inflate(com.example.mrt.ship.R.layout.item_list_options, null);
         return new ViewHolder(view);
     }
 
@@ -60,7 +58,7 @@ public class RcvOptionsAdapter extends RecyclerView.Adapter<RcvOptionsAdapter.Vi
 
         // Set random color icon
         Drawable background = icon_option.getBackground();
-        int[] androidColors = context.getResources().getIntArray(R.array.androidcolors);
+        int[] androidColors = context.getResources().getIntArray(com.example.mrt.ship.R.array.androidcolors);
         int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
         ((GradientDrawable)background).setColor(randomAndroidColor);
     }
@@ -76,8 +74,8 @@ public class RcvOptionsAdapter extends RecyclerView.Adapter<RcvOptionsAdapter.Vi
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            icon_option = (ImageView)itemView.findViewById(R.id.icon_option);
-            name_option = (TextView)itemView.findViewById(R.id.name_option);
+            icon_option = (ImageView)itemView.findViewById(com.example.mrt.ship.R.id.icon_option);
+            name_option = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.name_option);
 
             // set click item
             itemView.setOnClickListener(new View.OnClickListener() {

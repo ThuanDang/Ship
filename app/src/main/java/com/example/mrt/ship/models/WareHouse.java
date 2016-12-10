@@ -1,16 +1,19 @@
 package com.example.mrt.ship.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by mrt on 28/11/2016.
  */
 
-public class WareHouse {
+public class WareHouse implements Parcelable {
     private int id;
     private String name;
     private String phone;
     private String address;
     private double latitude;
-    private double longitude;
+    private double longtitude;
 
     public double getLatitude() {
         return latitude;
@@ -45,11 +48,11 @@ public class WareHouse {
     }
 
     public double getLongitude() {
-        return longitude;
+        return longtitude;
     }
 
     public void setLongitude(double longitude) {
-        this.longitude = longitude;
+        this.longtitude = longitude;
     }
 
     public int getId() {
@@ -59,4 +62,38 @@ public class WareHouse {
     public void setId(int id) {
         this.id = id;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.address);
+        dest.writeDouble(this.latitude);
+        dest.writeDouble(this.longtitude);
+    }
+
+    public WareHouse() {
+    }
+
+    protected WareHouse(Parcel in) {
+        this.address = in.readString();
+        this.latitude = in.readDouble();
+        this.longtitude = in.readDouble();
+    }
+
+    public static final Parcelable.Creator<WareHouse> CREATOR = new Parcelable.Creator<WareHouse>() {
+        @Override
+        public WareHouse createFromParcel(Parcel source) {
+            return new WareHouse(source);
+        }
+
+        @Override
+        public WareHouse[] newArray(int size) {
+            return new WareHouse[size];
+        }
+    };
 }

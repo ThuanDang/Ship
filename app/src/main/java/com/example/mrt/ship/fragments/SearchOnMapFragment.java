@@ -21,18 +21,18 @@ import android.widget.TextView;
 
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.CustomWindowAdapter;
-import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
+import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.models.WareHouse;
-import com.example.mrt.ship.networks.ApiInterface;
-import com.example.mrt.ship.networks.RESTfulApi;
-import com.example.mrt.ship.utils.MapUtils;
+import com.example.mrt.ship.networks.MyApi;
+import com.example.mrt.ship.utils.MapUtil;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -55,7 +55,6 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
 
     private View view;
     private boolean start = false;
-    private ApiInterface api;
     private List<Order> data;
     private String token;
     private android.location.Location myLocation;
@@ -73,34 +72,38 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     Circle circle;
 
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api = RESTfulApi.getApi();
+
         token = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString("token", "");
         markers = new ArrayList<>();
         data = new ArrayList<>();
     }
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(R.layout.fragment_search_on_map, container, false);
+            view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_search_on_map, container, false);
         }
+
         SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         fragment.getMapAsync(this);
 
         radius = (SeekBar)view.findViewById(R.id.seek_bar);
         text_radius = (TextView)view.findViewById(R.id.text_radius);
+
         radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 r = seekBar.getProgress()/5.0;
-                text_radius.setText(r + " km");
+                text_radius.setText(String.format("%s km", r));
             }
 
             @Override
@@ -111,22 +114,19 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 r = seekBar.getProgress()/5.0;
-
-
                 if(r == 0){
-
                     if(map != null){
                         map.clear();
                         markers.clear();
                     }
                     return;
                 }
-
                 fetchData();
             }
         });
         return view;
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -135,8 +135,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
         CameraUpdate init = CameraUpdateFactory.newLatLngZoom(HUST, 13);
         map.moveCamera(init);
 
-
-        map.setInfoWindowAdapter(new CustomWindowAdapter(getActivity().getLayoutInflater()));
+        //map.setInfoWindowAdapter(new CustomWindowAdapter(getActivity().getLayoutInflater()));
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
@@ -159,44 +158,44 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
 
     }
 
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
         if(isVisibleToUser){
-
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MapUtils.checkGPS(context);
+                    MapUtil.checkGPS(context);
                 }
             }, 450);
 
             if(myLocation == null){
                 start = true;
             }else {
-                if(MapUtils.GPSisON(context)){
+                if(MapUtil.GPSisON(context)){
                     fetchData();
                 }
             }
         }else {
             handler.removeCallbacksAndMessages(null);
-            MapUtils.cancelDialog();
+            MapUtil.cancelDialog();
         }
-
     }
+
 
     public void fetchData(){
         if(myLocation != null){
-            Call<List<Order>> call = api.searchOnMap("Bearer " + token,
+            Call<List<Order>> call = MyApi.getInstance().searchOnMap("Bearer " + token,
                     myLocation.getLatitude(),
                     myLocation.getLongitude(), r);
 
-            //move camera to my location
-            CameraUpdate cameraUpdate = CameraUpdateFactory
-                    .newLatLngZoom(new LatLng(myLocation.getLatitude(),
-                            myLocation.getLongitude()), 14);
-            map.animateCamera(cameraUpdate, 350, null);
+            CameraPosition cameraPosition = new CameraPosition.Builder().bearing(90f)
+                    .target(new LatLng(myLocation.getLatitude(),
+                            myLocation.getLongitude()))
+                    .zoom(14).build();
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 350, null);
 
             // draw circle with radius
             if(circle != null){
@@ -228,7 +227,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                         showError();
                     }else {
                         if(data != null){
-                            mListener.countOrders(data.size(), 2);
+                            mListener.countOrders(data.size(), 2, true);
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -239,10 +238,9 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                                         final WareHouse address = item.getWare_house();
                                         final LatLng latLng = new LatLng(address.getLatitude(),
                                                 address.getLongitude());
-                                        Log.d("test", "run: " + latLng.latitude + latLng.longitude);
+
                                         for(Marker marker: markers){
                                             if(marker.getPosition().equals(latLng)){
-                                                Log.d("test", "run: ");
                                                 next = true;
                                                 marker.setTag(1);
                                                 break;
@@ -260,13 +258,13 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
                                                         .icon(BitmapDescriptorFactory.fromResource(
                                                                 R.drawable.ic_marker))
                                                 );
-                                                Log.d("test", "run: dfdfdfdf");
                                                 markers.add(marker);
-                                                MapUtils.dropPinEffect(marker);
+                                                MapUtil.dropPinEffect(marker);
                                             }
                                         }, time+=150);
 
                                     }
+
                                     List<Marker> delete = new ArrayList<>();
                                     for(Marker marker: markers){
                                         if(marker.getTag() == null){
@@ -297,8 +295,8 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
 
     public void showError(){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(context.getResources().getString(R.string.connect_error_title));
-        builder.setMessage(context.getResources().getString(R.string.connect_error_message));
+        builder.setTitle(context.getResources().getString(com.example.mrt.ship.R.string.connect_error_title));
+        builder.setMessage(context.getResources().getString(com.example.mrt.ship.R.string.connect_error_message));
         builder.setCancelable(false);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
@@ -314,8 +312,6 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     public void onInfoWindowClick(Marker marker) {
 
     }
-
-
 
 
     @Override

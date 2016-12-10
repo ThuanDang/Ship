@@ -31,6 +31,7 @@
     <string name="complete">Hoàn thành</string>
     <string name="plan">Lịch trình</string>
     <string name="radius">1 km</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
 
 
     <string-array name="svg_strings">

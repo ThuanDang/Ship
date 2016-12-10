@@ -1,8 +1,6 @@
 package com.example.mrt.ship.models;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by mrt on 16/10/2016.

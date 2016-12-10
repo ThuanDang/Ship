@@ -1,11 +1,12 @@
 package com.example.mrt.ship.models;
-
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by mrt on 15/10/2016.
  */
 
-public class Order{
+public class Order implements Parcelable {
 
     private int id;
     private String name;
@@ -97,4 +98,55 @@ public class Order{
     public void setCommodities(Commodity commodities) {
         this.commodities = commodities;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeInt(this.status);
+        dest.writeInt(this.type);
+        dest.writeDouble(this.ship_cost);
+        dest.writeDouble(this.price);
+        dest.writeParcelable(this.ware_house, flags);
+        dest.writeParcelable(this.recipient, flags);
+        dest.writeParcelable(this.commodities, flags);
+        dest.writeParcelable(this.customer, flags);
+    }
+
+    public Order() {
+    }
+
+    protected Order(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.status = in.readInt();
+        this.type = in.readInt();
+        this.ship_cost = in.readDouble();
+        this.price = in.readDouble();
+        this.ware_house = in.readParcelable(WareHouse.class.getClassLoader());
+        this.recipient = in.readParcelable(Recipient.class.getClassLoader());
+        this.commodities = in.readParcelable(Commodity.class.getClassLoader());
+        this.customer = in.readParcelable(Customer.class.getClassLoader());
+    }
+
+    public static final Creator<Order> CREATOR = new Creator<Order>() {
+        @Override
+        public Order createFromParcel(Parcel source) {
+            return new Order(source);
+        }
+
+        @Override
+        public Order[] newArray(int size) {
+            return new Order[size];
+        }
+    };
 }
+
+
+

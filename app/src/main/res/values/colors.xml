@@ -21,7 +21,8 @@
     <color name="title_background_color">#ffffff</color>
     <color name="text_hint_color" >#FF80D8FF</color>
     <color name="sun_color" >#e53935</color>
-
+    <color name="button_detail_color">@color/colorPrimaryDark</color>
+    <color name="divider_horizontal">#82657786</color>
 
 
     <item name="black" type="color">#b4000000</item>

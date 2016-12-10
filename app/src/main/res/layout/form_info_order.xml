@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <TableLayout
+        android:id="@+id/info_order_form"
+        android:padding="8dp"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <!-- Type -->
+        <TableRow
+            android:layout_marginTop="16dp">
+            <TextView
+                android:textSize="16sp"
+                android:textColor="@color/black_text"
+                android:text="Loại đơn hàng: "
+                android:layout_column="1"/>
+            <TextView
+                android:id="@+id/type"
+                android:fontFamily="sans-serif-light"
+                android:textSize="15sp"
+                android:layout_column="2"
+                android:layout_marginStart="16dp"/>
+        </TableRow>
+
+        <!-- Commodity -->
+        <TableRow
+            android:layout_marginTop="16dp">
+            <TextView
+                android:textSize="16sp"
+                android:textColor="@color/black_text"
+                android:text="Hàng hóa: "
+                android:layout_column="1"/>
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:textSize="15sp"
+                android:id="@+id/commodity_name"
+                android:layout_column="2"
+                android:layout_marginStart="16dp"/>
+            <TextView
+                android:id="@+id/commodity_count"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:layout_column="3"
+                android:background="@drawable/count_shape"
+                android:layout_marginStart="16dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp" />
+        </TableRow>
+
+        <!-- Owner -->
+        <TableRow
+            android:layout_marginTop="16dp">
+            <TextView
+                android:textSize="16sp"
+                android:textColor="@color/black_text"
+                android:text="Chủ đơn hàng: "
+                android:layout_column="1"/>
+            <TextView
+                android:id="@+id/owner_name"
+                android:fontFamily="sans-serif-light"
+                android:textSize="15sp"
+                android:layout_column="2"
+                android:layout_marginStart="16dp"/>
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/owner_address"
+                android:fontFamily="sans-serif-light"
+                android:textSize="15sp"
+                android:layout_column="2"
+                android:layout_marginStart="16dp"/>
+        </TableRow>
+
+    </TableLayout>

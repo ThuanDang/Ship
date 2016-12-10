@@ -57,7 +57,7 @@
             android:layout_toEndOf="@+id/ic"
             android:textSize="16sp"
             android:layout_centerVertical="true"
-            android:textColor="@color/black"
+            android:textColor="@color/black_text"
             android:layout_gravity="center_vertical"
             android:text="@string/get_notifications"
             android:layout_width="wrap_content"

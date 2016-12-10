@@ -3,6 +3,7 @@ package com.example.mrt.ship.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,20 +12,21 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.mrt.ship.R;
-import com.example.mrt.ship.adapters.RcvReceivedAdapter;
-import com.example.mrt.ship.interfaces.HideScrollListener;
+import com.example.mrt.ship.activities.DetailOrderActivity;
+import com.example.mrt.ship.activities.ScheduleWayActivity;
+import com.example.mrt.ship.adapters.ReceivedAdapter;
+import com.example.mrt.ship.interfaces.HideViewScrollerListener;
 import com.example.mrt.ship.interfaces.OnFragmentReceivedListener;
 import com.example.mrt.ship.models.Order;
-import com.example.mrt.ship.networks.ApiInterface;
-import com.example.mrt.ship.networks.GetJson;
-import com.example.mrt.ship.networks.RESTfulApi;
+import com.example.mrt.ship.networks.MyApi;
+import com.example.mrt.ship.networks.Token;
 import com.example.mrt.ship.preferences.SpacesItemDecoration;
 
 import java.util.ArrayList;
@@ -47,19 +49,20 @@ public class ReceivedOrdersFragment extends Fragment {
     private String token;
     private TextView plan;
 
-    private ApiInterface api;
     private List<Order> data;
-    private RcvReceivedAdapter adapter;
+    private ReceivedAdapter adapter;
     private OnFragmentReceivedListener listener;
 
 
     private Handler handler = new Handler();
+    private boolean countable = false;
+
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api = RESTfulApi.getApi();
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString("token", "");
         data = new ArrayList<>();
@@ -69,25 +72,28 @@ public class ReceivedOrdersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_received_orders, container, false);
+        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_received_orders, container, false);
 
-        receivedList = (RecyclerView)view.findViewById(R.id.list_order);
-        progressBar = (ProgressBar)view.findViewById(R.id.progress);
-        errorForm = view.findViewById(R.id.error_form);
-        task = (ProgressBar)view.findViewById(R.id.progress_task);
-        plan = (TextView)view.findViewById(R.id.plan);
+        receivedList = (RecyclerView)view.findViewById(com.example.mrt.ship.R.id.list);
+        progressBar = (ProgressBar)view.findViewById(com.example.mrt.ship.R.id.progress);
+        errorForm = view.findViewById(com.example.mrt.ship.R.id.error);
+        task = (ProgressBar)view.findViewById(com.example.mrt.ship.R.id.progress_task);
+        plan = (TextView)view.findViewById(com.example.mrt.ship.R.id.plan);
+
+        setPlan();
 
         setList();
 
         setError();
 
-        handler.postDelayed(new Runnable() {
+       /* handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 showProgress(true);
                 fetchData();
             }
-        }, 350);
+        }, 350);*/
+
         return view;
     }
 
@@ -104,12 +110,12 @@ public class ReceivedOrdersFragment extends Fragment {
 
 
     public void setList(){
-        adapter = new RcvReceivedAdapter(getContext(), data);
+        adapter = new ReceivedAdapter(getContext(), data);
         receivedList.setAdapter(adapter);
         receivedList.setLayoutManager(new LinearLayoutManager(getContext()));
         receivedList.setHasFixedSize(true);
         receivedList.addItemDecoration(new SpacesItemDecoration(10));
-        receivedList.addOnScrollListener(new HideScrollListener() {
+        receivedList.addOnScrollListener(new HideViewScrollerListener() {
             @Override
             public void onHide() {
                 listener.hideTab();
@@ -121,10 +127,14 @@ public class ReceivedOrdersFragment extends Fragment {
             }
         });
 
-        adapter.setOnItemClickListener(new RcvReceivedAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new ReceivedAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
-
+                Intent intent = new Intent(getActivity(), DetailOrderActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("order", adapter.getData().get(position));
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
     }
@@ -174,20 +184,21 @@ public class ReceivedOrdersFragment extends Fragment {
 
 
     public void fetchData(){
-
-        Call<List<Order>> call = api.getReceivedOrders("Bearer " + token);
-
+        Call<List<Order>> call = MyApi.getInstance().getReceivedOrders(Token.share(getContext()));
         call.enqueue(new Callback<List<Order>>() {
-            int status;
             @Override
             public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
-                status = response.code();
                 data = response.body();
-
-                if(status != 200){
+                if(response.code() != 200){
                     showError(true);
                 }else {
                     if(data != null){
+
+                        if(countable){
+                            listener.countOrders(data.size(), 1, countable);
+                        }
+
+                        task.setMax(data.size());
                         adapter.swapItems(data);
 
                         handler.postDelayed(new Runnable() {
@@ -197,8 +208,6 @@ public class ReceivedOrdersFragment extends Fragment {
                             }
                         }, 300);
 
-                        listener.countOrders(data.size(), 1);
-                        task.setMax(data.size());
                     }
                 }
             }
@@ -210,4 +219,46 @@ public class ReceivedOrdersFragment extends Fragment {
         });
     }
 
+
+    public void setPlan(){
+        plan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(data.size() != 0){
+                    Intent intent = new Intent(getActivity(), ScheduleWayActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("data", (ArrayList<Order>)data);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser){
+            countable = true;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showProgress(true);
+                    fetchData();
+                }
+            }, 350);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
 }

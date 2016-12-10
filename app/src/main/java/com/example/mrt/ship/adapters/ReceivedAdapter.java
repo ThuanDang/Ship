@@ -10,13 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.mrt.ship.R;
-import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.preferences.OrdersDiffCallback;
-import com.example.mrt.ship.utils.FormatUtils;
+import com.example.mrt.ship.utils.FormatUtil;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -25,7 +22,7 @@ import java.util.Random;
  */
 
 // Create adapter extends RecyclerView.Adapter with specific ViewHolder
-public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class ReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private List<Order> data;
     private Context context;
 
@@ -41,7 +38,7 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     // constructor
-    public RcvReceivedAdapter(Context context, List<Order> data){
+    public ReceivedAdapter(Context context, List<Order> data){
         this.context = context;
         this.data = data;
     }
@@ -55,13 +52,13 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         OrderVH(final View itemView) {
             super(itemView);
-            text_image_order = (TextView)itemView.findViewById(R.id.text_image_oder);
-            image_order = itemView.findViewById(R.id.icon_order);
-            name_order = (TextView)itemView.findViewById(R.id.name_order);
-            place_receiver = (TextView)itemView.findViewById(R.id.place_receiver);
-            place_delivery = (TextView)itemView.findViewById(R.id.place_delivery);
-            ship_cost = (TextView)itemView.findViewById(R.id.ship_cost);
-            deposit = (TextView)itemView.findViewById(R.id.deposit);
+            text_image_order = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.text_image_oder);
+            image_order = itemView.findViewById(com.example.mrt.ship.R.id.icon_order);
+            name_order = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.name_order);
+            place_receiver = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.place_receiver);
+            place_delivery = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.place_delivery);
+            ship_cost = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.ship_cost);
+            deposit = (TextView)itemView.findViewById(com.example.mrt.ship.R.id.deposit);
 
             // Setup the click listener
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +78,7 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.item_list_received, parent, false);
+        View view = inflater.inflate(com.example.mrt.ship.R.layout.item_list_received, parent, false);
         return new OrderVH(view);
     }
 
@@ -104,11 +101,11 @@ public class RcvReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             name_order.setText(order.getName());
             place_receiver.setText(order.getWare_house().getAddress());
             place_delivery.setText(order.getRecipient().getAddress());
-            ship_cost.setText(FormatUtils.formatCurrency(order.getShip_cost(), FormatUtils.VN));
-            deposit.setText(FormatUtils.formatCurrency(order.getPrice(), FormatUtils.VN));
+            ship_cost.setText(FormatUtil.formatCurrency(order.getShip_cost(), FormatUtil.VN));
+            deposit.setText(FormatUtil.formatCurrency(order.getPrice(), FormatUtil.VN));
             // Set random color icon
             Drawable background = image_order.getBackground();
-            int[] androidColors = context.getResources().getIntArray(R.array.androidcolors);
+            int[] androidColors = context.getResources().getIntArray(com.example.mrt.ship.R.array.androidcolors);
             int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
             ((GradientDrawable)background).setColor(randomAndroidColor);
     }

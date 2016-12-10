@@ -8,7 +8,7 @@ import java.util.List;
  * Created by mrt on 28/10/2016.
  */
 
-public class GetJson {
+public class Result {
     private int total;
     private String next_page_url;
     private List<Order> data;

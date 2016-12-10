@@ -26,15 +26,14 @@ public class CustomWindowAdapter implements GoogleMap.InfoWindowAdapter {
     public View getInfoContents(Marker marker) {
 
         // Getting view from the layout file
-        View v = inflater.inflate(R.layout.custom_marker_info, null);
+        View v = inflater.inflate(R.layout.custom_info_window, null);
 
         // Populate fields
         TextView title = (TextView) v.findViewById(R.id.title);
         title.setText(marker.getTitle());
 
-        TextView description = (TextView) v.findViewById(R.id.description);
-        description.setText(marker.getSnippet());
-
+        TextView address = (TextView) v.findViewById(R.id.address);
+        address.setText(marker.getSnippet());
 
         return v;
     }

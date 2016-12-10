@@ -22,13 +22,12 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCO80d2HeElbprv2Gn9HI9ER0Y8HF6wsTY" />
+            android:value="AIzaSyBLJkIceaFU_s6yHpBe9b1D60ox3jH8A90" />
 
-        <activity android:name=".activities.NoteActivity">
-        </activity>
+        <activity android:name=".activities.NoteActivity"></activity>
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar.ColorAccent"/>
+            android:theme="@style/AppTheme.NoActionBar.ColorAccent" />
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar.ColorAccent">
@@ -40,8 +39,24 @@
         </activity>
         <activity
             android:name=".activities.SearchActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".activities.DetailOrderActivity"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.DetailOrderActivity" />
+
+        <!-- FCM -->
+        <service android:name="com.pusher.android.notifications.fcm.FCMMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name="com.pusher.android.notifications.fcm.FCMInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".activities.SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar.ColorAccent"/>
     </application>
 
 </manifest>

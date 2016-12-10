@@ -16,11 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.example.mrt.ship.R;
 import com.example.mrt.ship.activities.LoginActivity;
 import com.example.mrt.ship.activities.NoteActivity;
-import com.example.mrt.ship.adapters.RcvOptionsAdapter;
-import com.example.mrt.ship.interfaces.HideScrollListener;
+import com.example.mrt.ship.adapters.OptionsAdapter;
+import com.example.mrt.ship.interfaces.HideViewScrollerListener;
 import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 
@@ -30,7 +29,7 @@ import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 
 public class OptionsFragment extends Fragment{
     private OnFragmentOptionsListener mListener;
-    private RcvOptionsAdapter adapter;
+    private OptionsAdapter adapter;
     private RecyclerView listOptions;
     private ImageView avatar;
     private TextView name;
@@ -50,9 +49,9 @@ public class OptionsFragment extends Fragment{
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_options, container, false);
+        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_options, container, false);
 
-        listOptions = (RecyclerView)view.findViewById(R.id.list_options);
+        listOptions = (RecyclerView)view.findViewById(com.example.mrt.ship.R.id.list_options);
         setListOptions();
 
 
@@ -71,12 +70,12 @@ public class OptionsFragment extends Fragment{
     }
 
     public void setListOptions(){
-        adapter = new RcvOptionsAdapter(getActivity());
+        adapter = new OptionsAdapter(getActivity());
         listOptions.setLayoutManager(new LinearLayoutManager(getActivity()));
         listOptions.setAdapter(adapter);
 
         // set hide tab
-        listOptions.addOnScrollListener(new HideScrollListener() {
+        listOptions.addOnScrollListener(new HideViewScrollerListener() {
             @Override
             public void onHide() {
                 mListener.hideTab();
@@ -88,7 +87,7 @@ public class OptionsFragment extends Fragment{
             }
         });
 
-        adapter.setOnItemClickListener(new RcvOptionsAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new OptionsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 switch (position){
@@ -103,7 +102,7 @@ public class OptionsFragment extends Fragment{
         preferences.edit().remove("token").apply();
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.right_to_left_1, R.anim.right_to_left_2);
+        getActivity().overridePendingTransition(com.example.mrt.ship.R.anim.right_to_left_1, com.example.mrt.ship.R.anim.right_to_left_2);
         getActivity().finish();
     }
 

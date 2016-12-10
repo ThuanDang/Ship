@@ -16,12 +16,12 @@ import com.example.mrt.ship.preferences.CustomTypefaceSpan;
  * Created by mrt on 16/10/2016.
  */
 
-public class FontUtils {
+public class FontUtil {
     private Context context;
 
-    private FontUtils(){}
-    private static FontUtils instance = new FontUtils();
-    public static FontUtils from(Context context){
+    private FontUtil(){}
+    private static FontUtil instance = new FontUtil();
+    public static FontUtil from(Context context){
         instance.setContext(context);
         return instance;
     }

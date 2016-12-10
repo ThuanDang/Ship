@@ -9,7 +9,7 @@ import android.widget.TextView;
  * Created by mrt on 26/10/2016.
  */
 
-public class ValidationUtils {
+public class ValidationUtil {
    public static void setListenFieldsEmpty(final Button submit, final TextView[] fields,
                                            final int bgOff, final int bgOn){
 
@@ -55,5 +55,10 @@ public class ValidationUtils {
             }
          });
       }
+   }
+
+
+   public static boolean isTheSame(TextView t1, TextView t2){
+      return (t1.getText().toString().equals(t2.getText().toString()));
    }
 }

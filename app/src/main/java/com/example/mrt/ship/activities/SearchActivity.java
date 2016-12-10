@@ -12,14 +12,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.example.mrt.ship.R;
-import com.example.mrt.ship.adapters.RcvOrdersAdapter;
+import com.example.mrt.ship.adapters.OrdersAdapter;
 
 public class SearchActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private EditText textInput;
     private RecyclerView searchResult;
-    private RcvOrdersAdapter adapter;
+    private OrdersAdapter adapter;
     private ProgressBar progress;
     private View error;
     private Handler handler = new Handler();
@@ -27,14 +26,14 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(com.example.mrt.ship.R.layout.activity_search);
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar_search);
+        toolbar = (Toolbar)findViewById(com.example.mrt.ship.R.id.toolbar_search);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        textInput = (EditText)findViewById(R.id.search_input);
+        textInput = (EditText)findViewById(com.example.mrt.ship.R.id.search_input);
 
 
 

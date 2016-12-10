@@ -7,5 +7,5 @@ package com.example.mrt.ship.interfaces;
 public interface OnFragmentListener {
     void hideTab();
     void showTab();
-    void countOrders(int n, int page);
+    void countOrders(int n, int page, boolean countable);
 }

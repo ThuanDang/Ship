@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.mrt.ship.R;
 import com.example.mrt.ship.data.NotesDatabaseHelper;
 import com.example.mrt.ship.models.Note;
 
@@ -45,9 +44,9 @@ public class CreateNoteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_create_note, container, false);
-        final EditText header = (EditText) view.findViewById(R.id.cr_note_header);
-        final EditText content = (EditText)view.findViewById(R.id.cr_note_content);
+        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_create_note, container, false);
+        final EditText header = (EditText) view.findViewById(com.example.mrt.ship.R.id.cr_note_header);
+        final EditText content = (EditText)view.findViewById(com.example.mrt.ship.R.id.cr_note_content);
         if(args != null){
             note = (Note)args.getSerializable(ARG);
             if(note != null){
@@ -57,7 +56,7 @@ public class CreateNoteFragment extends Fragment {
         }
 
         // Save note
-        Button save = (Button)view.findViewById(R.id.btn_save_note);
+        Button save = (Button)view.findViewById(com.example.mrt.ship.R.id.btn_save_note);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
