@@ -1,13 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_detail_order"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.mrt.ship.activities.DetailOrderActivity">
+    >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</RelativeLayout>
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            layout="@layout/form_map"/>
+        <View
+            android:background="@drawable/shadow"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+        <include
+            layout="@layout/form_info_order"/>
+
+        <View
+            android:background="@color/divider_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <include
+            layout="@layout/form_button_order"/>
+
+        <TextView
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="8dp"
+            android:text="Các đơn hàng tiện đường"
+            android:textColor="@color/black_text"
+            android:textSize="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_marginTop="16dp"
+            android:background="@color/divider_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_suggest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+</ScrollView>
