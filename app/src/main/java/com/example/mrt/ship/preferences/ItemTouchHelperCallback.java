@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
+import com.example.mrt.ship.R;
 import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 
 /**
@@ -35,7 +36,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         this.swipe = swipe;
         if(swipe){
             p = new Paint();
-            p.setARGB(255, 121, 85, 72);
+            p.setARGB(255, 244, 67, 54);
         }
 
     }
@@ -93,6 +94,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                         (float)itemView.getBottom() - width);
                 c.drawBitmap(icon, null,icon_dest,p);
 
+
             } else {
                 /* Set your color for negative displacement */
 
@@ -101,8 +103,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                         (float) itemView.getRight(), (float) itemView.getBottom(), p);
 
 
-                Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
-                        com.example.mrt.ship.R.drawable.remove);
+                Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.add);
                 RectF icon_dest = new RectF((float) itemView.getRight() - 2*width,
                         (float) itemView.getTop() + width,
                         (float) itemView.getRight() - width,

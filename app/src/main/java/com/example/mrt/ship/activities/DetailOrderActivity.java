@@ -1,15 +1,19 @@
 package com.example.mrt.ship.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +21,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.mrt.ship.R;
+import com.example.mrt.ship.adapters.CustomWindowAdapter;
 import com.example.mrt.ship.adapters.OrdersSuggestAdapter;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.networks.MyApi;
@@ -44,23 +49,38 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailOrderActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class DetailOrderActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    @BindView(R.id.btn_receive) Button buttonReceive;
-    @BindView(R.id.btn_cancel) Button buttonCancel;
-    @BindView(R.id.btn_pickup) Button buttonPickup;
-    @BindView(R.id.btn_delivery) Button buttonDelivery;
-    @BindView(R.id.distance) TextView distance;
-    @BindView(R.id.duration) TextView duration;
-    @BindView(R.id.list_suggest) RecyclerView listSuggest;
-    @BindView(R.id.scroll) ScrollView scrollView;
-    @BindView(R.id.type) TextView orderType;
-    @BindView(R.id.commodity_name) TextView commodityName;
-    @BindView(R.id.commodity_count) TextView commodityCount;
-    @BindView(R.id.owner_name) TextView ownerName;
-    @BindView(R.id.owner_address) TextView ownerAddress;
-    @BindView(R.id.smooth_progress) SmoothProgressBar smoothProgress;
-    @BindView(R.id.cancel_or_pickup) View cancel_pickup_view;
+    @BindView(R.id.btn_receive)
+    Button buttonReceive;
+    @BindView(R.id.btn_cancel)
+    Button buttonCancel;
+    @BindView(R.id.btn_pickup)
+    Button buttonPickup;
+    @BindView(R.id.btn_delivery)
+    Button buttonDelivery;
+    @BindView(R.id.distance)
+    TextView distance;
+    @BindView(R.id.duration)
+    TextView duration;
+    @BindView(R.id.list_suggest)
+    RecyclerView listSuggest;
+    @BindView(R.id.scroll)
+    ScrollView scrollView;
+    @BindView(R.id.type)
+    TextView orderType;
+    @BindView(R.id.commodity_name)
+    TextView commodityName;
+    @BindView(R.id.commodity_count)
+    TextView commodityCount;
+    @BindView(R.id.owner_name)
+    TextView ownerName;
+    @BindView(R.id.owner_address)
+    TextView ownerAddress;
+    @BindView(R.id.smooth_progress)
+    SmoothProgressBar smoothProgress;
+    @BindView(R.id.cancel_or_pickup)
+    View cancel_pickup_view;
 
     private Order order;
     private List<Order> dataSuggest;
@@ -96,54 +116,51 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
 
 
     @OnClick(R.id.btn_receive)
-    public void receiveOrder(){
+    public void receiveOrder() {
         smoothProgress.setVisibility(View.VISIBLE);
         buttonReceive.setVisibility(View.GONE);
         MyApi.getInstance().receiveOrder(Token.share(this), order.getId())
                 .enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                final int status = response.code();
-                Context context = DetailOrderActivity.this;
-                Log.d("test", "onResponse: " + status);
-                if(status == 200){
-                    smoothProgress.setVisibility(View.GONE);
-                    DialogUtil.receiveSuccess(context);
-                    buttonReceive.setVisibility(View.GONE);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        final int status = response.code();
+                        Context context = DetailOrderActivity.this;
+                        smoothProgress.setVisibility(View.GONE);
+                        if (status == 200) {
+                            DialogUtil.receiveSuccess(context);
                             cancel_pickup_view.setVisibility(View.VISIBLE);
+
+                        } else if (status == 404) {
+                            DialogUtil.conflictReceiveOrder(context,
+                                    new DialogUtil.Callback() {
+                                        @Override
+                                        public void onPositiveButtonClick() {
+                                            Intent intent = new Intent(DetailOrderActivity.this,
+                                                    MainActivity.class);
+                                            startActivity(intent);
+                                            DetailOrderActivity.this.finish();
+                                        }
+                                    });
+                            buttonReceive.setVisibility(View.VISIBLE);
+                        } else if (status == 402) {
+                            DialogUtil.notEnoughMoney(context);
+                            buttonReceive.setVisibility(View.VISIBLE);
+                        } else {
+                            DialogUtil.connectError(context);
+                            buttonReceive.setVisibility(View.VISIBLE);
                         }
-                    }, 500);
+                    }
 
-                }else if(status == 404){
-                    DialogUtil.conflictReceiveOrder(context,
-                            new DialogUtil.Callback() {
-                                @Override
-                                public void onPositiveButtonClick() {
-                                    Intent intent = new Intent(DetailOrderActivity.this,
-                                            MainActivity.class);
-                                    startActivity(intent);
-                                    DetailOrderActivity.this.finish();
-                                }
-                            });
-                }else if(status == 402){
-                    DialogUtil.notEnoughMoney(context, null);
-                }else {
-                    DialogUtil.connectError(context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                DialogUtil.connectError(DetailOrderActivity.this);
-            }
-        });
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        DialogUtil.connectError(DetailOrderActivity.this);
+                        buttonReceive.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 
     @OnClick(R.id.btn_pickup)
-    public void pickup(){
+    public void pickup() {
         cancel_pickup_view.setVisibility(View.GONE);
         smoothProgress.setVisibility(View.VISIBLE);
 
@@ -152,7 +169,7 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
 
-                if(response.code() != 200){
+                if (response.code() != 200) {
                     DialogUtil.connectError(DetailOrderActivity.this);
                 }
 
@@ -166,14 +183,14 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
     }
 
     @OnClick(R.id.btn_delivery)
-    public void delivery(){
+    public void delivery() {
         smoothProgress.setVisibility(View.VISIBLE);
         buttonDelivery.setVisibility(View.GONE);
         MyApi.getInstance().deliveryOrder(Token.share(this),
                 order.getId()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.code() != 200){
+                if (response.code() != 200) {
                     DialogUtil.connectError(DetailOrderActivity.this);
                 }
             }
@@ -186,12 +203,12 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
     }
 
     @OnClick(R.id.btn_cancel)
-    public void cancelOrder(){
+    public void cancelOrder() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Xác nhận hủy");
         builder.setMessage("Hủy đơn hàng sẽ dẫn đến việc bạn bị trừ thành tích cá nhân. " +
-                "Vẫn tiếp tục ?");
+                "Vẫn tiếp tục?");
 
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
@@ -204,12 +221,12 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
 
-                        Log.d("test", "onResponse: " + response.code());
-                        if(response.code() != 200){
+
+                        if (response.code() != 200) {
                             DialogUtil.connectError(DetailOrderActivity.this);
                             cancel_pickup_view.setVisibility(View.VISIBLE);
                             smoothProgress.setVisibility(View.GONE);
-                        }else {
+                        } else {
                             buttonReceive.setVisibility(View.VISIBLE);
                             smoothProgress.setVisibility(View.GONE);
                             DialogUtil.cancelOrderSuccess(DetailOrderActivity.this);
@@ -236,19 +253,29 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
     }
 
 
-
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        LatLng latLng = new LatLng(
-                (order.getWare_house().getLatitude() + order.getRecipient().getLatitude())/2,
-                (order.getWare_house().getLongitude() + order.getRecipient().getLongitude())/2);
 
         CameraPosition cameraPosition = new CameraPosition.Builder().bearing(90f)
-                .target(latLng)
+                .target(new LatLng(order.getWare_house().getLatitude(),
+                        order.getWare_house().getLongitude()))
                 .zoom(16).build();
 
+        googleMap.setInfoWindowAdapter(new CustomWindowAdapter(getLayoutInflater()));
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                if(marker.getTitle().equals("Nhận hàng")){
+                    call(order.getRecipient().getPhone());
+                }else{
+                    call(order.getWare_house().getPhone());
+                }
+            }
+        });
 
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 350, null);
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -278,8 +305,18 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
             public void run() {
                 getDataSuggest();
             }
-        }, 2000);
+        }, 1000);
+    }
 
+
+    public void call(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + number));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        startActivity(callIntent);
     }
 
 
@@ -299,6 +336,7 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
                 bundle.putParcelable("order", adapter.getData().get(position));
                 intent.putExtras(bundle);
                 startActivity(intent);
+                DetailOrderActivity.this.finish();
             }
         });
     }
@@ -345,7 +383,9 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
                 .enqueue(new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
-                        adapter.swapItems(response.body());
+                        if(response.body() != null){
+                            adapter.swapItems(response.body());
+                        }
                     }
 
                     @Override

@@ -16,12 +16,12 @@
         android:layout_below="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff0099cc"
-        android:text="Hours" />
+        android:textColor="#ff0099cc" />
 
     <ImageView
-        android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/title"
+        android:layout_marginStart="4dp"
+        android:layout_above="@+id/address"
         android:src="@drawable/ic_telephone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

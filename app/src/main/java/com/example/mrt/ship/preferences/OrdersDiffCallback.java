@@ -32,7 +32,9 @@ public class OrdersDiffCallback extends DiffUtil.Callback{
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldList.get(oldItemPosition).getId() == newList.get(newItemPosition).getId();
+        return oldList.get(oldItemPosition) != null && newList.get(newItemPosition) != null &&
+                oldList.get(oldItemPosition).getId() == newList.get(newItemPosition).getId();
+
     }
 
     @Override

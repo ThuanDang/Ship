@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.PagerAdapter;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
 import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
@@ -35,6 +37,9 @@ import com.pusher.android.notifications.PushNotificationRegistration;
 import com.pusher.android.notifications.fcm.FCMPushNotificationReceivedListener;
 import com.pusher.android.notifications.interests.InterestSubscriptionChangeListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity implements
         OnFragmentOrdersListener,
@@ -45,39 +50,50 @@ public class MainActivity extends AppCompatActivity implements
     private String[] titles = { "Các đơn hàng đang chờ", "Các đơn hàng đã nhận",
             "Đơn hàng quanh đây", "Tùy chọn"};
     private String[] counts = {"", "", "", ""};
+    private Handler handler = new Handler();
+    public static boolean oneCount = true;
 
-    private View tabLayoutForm;
-    private TextView title;
-    private TextView count;
-    private View topView;
 
-    private View search;
+    @BindView(R.id.tab_layout_form) View tabLayoutForm;
+    @BindView(R.id.title_text) TextView title;
+    @BindView(R.id.count) TextView count;
+    @BindView(R.id.top_view) View topView;
+    @BindView(R.id.viewpager) ViewPager viewPager;
+    @BindView(R.id.search_form) View search;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.example.mrt.ship.R.layout.activity_main);
-
-        setFCM();
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        // title
+        title.setText(titles[0]);
 
         // Tab and viewpager
         setTabToViewPager();
 
-        tabLayoutForm = findViewById(com.example.mrt.ship.R.id.tab_layout_form);
-        topView = findViewById(com.example.mrt.ship.R.id.top_view);
-        // title form
-        title = (TextView)findViewById(com.example.mrt.ship.R.id.title_text);
-        title.setText(titles[0]);
-        count = (TextView)findViewById(com.example.mrt.ship.R.id.count);
+        final Bundle bundle = getIntent().getExtras();
+        if(bundle != null){
 
-        //search form
-        search = findViewById(com.example.mrt.ship.R.id.search_form);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    viewPager.setCurrentItem(bundle.getInt("page"));
+                }
+            }, 500);
+
+        }
+
+        setFCM();
+
+
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 startActivity(intent);
-                overridePendingTransition(0, com.example.mrt.ship.R.anim.search_out);
+                overridePendingTransition(0, R.anim.search_out);
 
             }
         });
@@ -85,8 +101,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setTabToViewPager(){
-        // Get the ViewPager
-        ViewPager viewPager = (ViewPager)findViewById(com.example.mrt.ship.R.id.viewpager);
         // Get PagerAdapter
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(),
                 MainActivity.this);
@@ -95,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements
         viewPager.setOffscreenPageLimit(4);
 
         // Give TabLayout to ViewPager
-        TabLayout tabLayout = (TabLayout)findViewById(com.example.mrt.ship.R.id.tab_layout);
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
         // Set icon for TabLayout
@@ -158,10 +172,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void countOrders(int n, int page, boolean countable) {
         String total = String.valueOf(n);
-        if(!total.equals(counts[page]) && countable){
-            count.setText(total);
+
+        if(oneCount){
+
+            if(!total.equals(counts[page]) && countable){
+                count.setText(total);
+            }
+
         }
-        counts[page] = String.valueOf(n);
+        counts[page] = total;
     }
 
     @Override
@@ -228,15 +247,19 @@ public class MainActivity extends AppCompatActivity implements
 
     public void showNotification(RemoteMessage remoteMessage){
 
-        Intent intent = new Intent(this, SplashActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("page", 1);
+        intent.putExtras(bundle);
         //unique requestID to differentiate between various notification with same NotifId
         int requestID = (int) System.currentTimeMillis();
         int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
         PendingIntent pIntent = PendingIntent.getActivity(MainActivity.this, requestID, intent, flags);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), com.example.mrt.ship.R.drawable.snowman);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.snowman);
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(MainActivity.this);
-        builder.setSmallIcon(com.example.mrt.ship.R.drawable.ic_app)
+
+        builder.setSmallIcon(R.drawable.ic_app)
                 .setContentTitle(remoteMessage.getData().get("title"))
                 .setContentText(remoteMessage.getData().get("body"))
                 .setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE

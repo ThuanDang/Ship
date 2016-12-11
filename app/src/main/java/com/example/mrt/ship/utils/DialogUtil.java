@@ -65,33 +65,11 @@ public class DialogUtil {
     }
 
 
-    public static void notEnoughMoney(Context context, @Nullable final Callback callback) {
+    public static void notEnoughMoney(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Bạn không đủ tiền!");
         builder.setIcon(R.drawable.ic_crying);
-
-        builder.setCancelable(false);
-
-        if (callback != null) {
-            builder.setMessage("Rất tiếc bạn không đủ tiền để nhận đơn hàng này, " +
-                    "bạn có muốn hệ thống tìm những đơn hàng phù hợp với tài khoản của mình không?");
-            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    callback.onPositiveButtonClick();
-                    dialogInterface.cancel();
-                }
-            });
-            builder.setNegativeButton("Không, cảm ơn", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-        } else {
-            builder.setMessage("Rất tiếc tài khoản của bạn không đủ để nhận đơn hàng này");
-        }
-
+        builder.setMessage("Rất tiếc tài khoản của bạn không đủ để nhận đơn hàng này.");
         builder.show();
     }
 

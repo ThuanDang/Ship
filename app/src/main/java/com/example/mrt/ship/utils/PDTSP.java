@@ -43,7 +43,7 @@ public class PDTSP {
        do{
             // step 1
             String k = getVertexMax(getMinInSH());
-           Log.d(TAG, "solve: " + k);
+           //Log.d(TAG, "solve: " + k);
             insertK(k);
        }while(S.size() != 0);
 
@@ -98,13 +98,39 @@ public class PDTSP {
         double min = 100000.0;
         if(vertexK.substring(0,1).equals("d")){
             int index_of_p = H.indexOf("p" + (k + 1));
-            Log.d(TAG, "insertK: " + index_of_p);
+            //Log.d(TAG, "insertK: " + index_of_p);
             if(index_of_p == -1){
                 S.remove(vertexK);
                 temp.add(vertexK);
                 return;
             }else {
-                for(int index = index_of_p; index < H.size() - 1; index++){
+                for(int index = index_of_p; index < H.size(); index++){
+                    if(index < H.size() - 1){
+                        int i = Integer.valueOf(H.get(index).substring(1));
+                        int j = Integer.valueOf(H.get(index + 1).substring(1));
+                        double increase = c.getRows().get(i).getElements().get(k).getDistance().getValue()
+                                + c.getRows().get(k).getElements().get(j).getDistance().getValue()
+                                - c.getRows().get(k).getElements().get(j).getDistance().getValue();
+                        if(increase < min){
+                            min = increase;
+                            position = index + 1;
+                        }
+                    }else {
+                        int i = Integer.valueOf(H.get(index).substring(1));
+                        double increase = c.getRows().get(i).getElements().get(k).getDistance().getValue();
+                        if(increase < min){
+                            min = increase;
+                            position = index + 1;
+                        }
+                    }
+
+
+                    //Log.d(TAG, "insertK: " + "increase: " + increase + " postition:" + position);
+                }
+            }
+        }else {
+            for(int index = 0; index < H.size(); index++){
+                if(index < H.size() - 1){
                     int i = Integer.valueOf(H.get(index).substring(1));
                     int j = Integer.valueOf(H.get(index + 1).substring(1));
                     double increase = c.getRows().get(i).getElements().get(k).getDistance().getValue()
@@ -114,21 +140,15 @@ public class PDTSP {
                         min = increase;
                         position = index + 1;
                     }
+                }else {
+                    int i = Integer.valueOf(H.get(index).substring(1));
+                    double increase = c.getRows().get(i).getElements().get(k).getDistance().getValue();
+                    if(increase < min){
+                        min = increase;
+                        position = index + 1;
+                    }
+                }
 
-                    //Log.d(TAG, "insertK: " + "increase: " + increase + " postition:" + position);
-                }
-            }
-        }else {
-            for(int index = 0; index < H.size() - 1; index++){
-                int i = Integer.valueOf(H.get(index).substring(1));
-                int j = Integer.valueOf(H.get(index + 1).substring(1));
-                double increase = c.getRows().get(i).getElements().get(k).getDistance().getValue()
-                        + c.getRows().get(k).getElements().get(j).getDistance().getValue()
-                        - c.getRows().get(k).getElements().get(j).getDistance().getValue();
-                if(increase < min){
-                    min = increase;
-                    position = index + 1;
-                }
 
                 //Log.d(TAG, "insertK: " + "increase: " + increase + " postition:" + position);
             }
@@ -139,7 +159,7 @@ public class PDTSP {
             S.remove(vertexK);
         }
 
-        Log.d(TAG, "insertK: S.size: " + S.size());
+        //Log.d(TAG, "insertK: S.size: " + S.size());
     }
 
     public void print(List<String> a){

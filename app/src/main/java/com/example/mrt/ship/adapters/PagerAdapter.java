@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.example.mrt.ship.fragments.OptionsFragment;
-import com.example.mrt.ship.fragments.OrdersWaitingFragment;
+import com.example.mrt.ship.fragments.OrdersFragment;
 import com.example.mrt.ship.fragments.ReceivedOrdersFragment;
 import com.example.mrt.ship.fragments.SearchOnMapFragment;
 
@@ -32,7 +32,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0){
-            return new OrdersWaitingFragment();
+            return new OrdersFragment();
 
         }
         else if (position == 1){

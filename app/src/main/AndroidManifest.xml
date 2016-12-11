@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +25,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBLJkIceaFU_s6yHpBe9b1D60ox3jH8A90" />
 
-        <activity android:name=".activities.NoteActivity"></activity>
+        <activity android:name=".activities.NoteActivity" />
         <activity
             android:name=".activities.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar.ColorAccent" />
@@ -48,15 +49,19 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service android:name="com.pusher.android.notifications.fcm.FCMInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name=".activities.SignUpActivity"
-            android:theme="@style/AppTheme.NoActionBar.ColorAccent"/>
+        <activity
+            android:name=".activities.SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar.ColorAccent" />
+        <activity android:name=".activities.AboutActivity" />
+        <activity android:name=".activities.HistoryActivity" />
+        <activity android:name=".activities.EventActivity"></activity>
+        <activity android:name=".activities.ScheduleWayActivity"/>
     </application>
 
 </manifest>

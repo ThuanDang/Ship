@@ -1,6 +1,8 @@
 package com.example.mrt.ship.networks;
 
+import com.example.mrt.ship.models.Event;
 import com.example.mrt.ship.models.Order;
+import com.example.mrt.ship.models.Shipper;
 
 import java.util.List;
 
@@ -93,5 +95,14 @@ public class MyApi {
                           @Field("phone") String phone,
                           @Field("acount_id") String account,
                           @Field("address") String address);
+
+
+        @GET("/api/ship/info")
+        Call<Shipper> getInfo(@Header("Authorization") String token);
+
+
+        @GET("/api/ship/events")
+        Call<Event> event(@Header("Authorization") String token);
+
     }
 }

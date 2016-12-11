@@ -2,7 +2,6 @@
 <FrameLayout
     android:id="@+id/error"
     android:visibility="gone"
-    android:elevation="1dp"
     android:clickable="true"
     android:background="@drawable/ripple_normal"
     android:layout_width="match_parent"

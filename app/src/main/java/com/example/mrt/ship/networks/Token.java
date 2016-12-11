@@ -32,4 +32,11 @@ public class Token {
         }
         preferences.edit().putString("token", "Bearer " + token).apply();
     }
+
+    public static void remove(Context context){
+        if(preferences == null){
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        }
+        preferences.edit().remove("token").apply();
+    }
 }

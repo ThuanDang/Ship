@@ -46,7 +46,27 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 
-    <include
-        layout="@layout/form_list"/>
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/progress"
+                android:indeterminateDrawable="@drawable/progress"
+                android:layout_gravity="center"
+                android:layout_height="24dp"
+                android:layout_width="24dp" />
+
+            <include
+                layout="@layout/form_error"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list"
+                android:elevation="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
 
 </LinearLayout>

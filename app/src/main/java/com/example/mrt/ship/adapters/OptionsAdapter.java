@@ -58,7 +58,7 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.ViewHold
 
         // Set random color icon
         Drawable background = icon_option.getBackground();
-        int[] androidColors = context.getResources().getIntArray(com.example.mrt.ship.R.array.androidcolors);
+        int[] androidColors = context.getResources().getIntArray(com.example.mrt.ship.R.array.colors);
         int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
         ((GradientDrawable)background).setColor(randomAndroidColor);
     }

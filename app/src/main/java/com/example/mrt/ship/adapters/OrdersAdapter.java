@@ -3,7 +3,6 @@ package com.example.mrt.ship.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.util.DiffUtil;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.interfaces.ItemTouchHelperAdapter;
 import com.example.mrt.ship.models.Order;
-
 import com.example.mrt.ship.preferences.OrdersDiffCallback;
 import com.example.mrt.ship.utils.FormatUtil;
 
@@ -30,7 +28,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by mrt on 15/10/2016.
- * RecyclerView Adapter for OrdersWaitingFragment
+ * RecyclerView Adapter for OrdersFragment
  */
 
 // Create adapter extends RecyclerView.Adapter with specific ViewHolder
@@ -47,7 +45,6 @@ public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public interface OnItemClickListener{
         void onItemOrderClick(View itemView, int position);
-        void onItemErrorClick(View itemView, int position);
     }
     
     public interface OnItemSwipedListener {
@@ -70,13 +67,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onItemDismiss(int position, int direction) {
-        if(direction == 32){
-            swiped_listener.onSwiped(position, direction);
-        }
-        else {
-            data.remove(position);
-            notifyItemRemoved(position);
-        }
+        swiped_listener.onSwiped(position, direction);
 
     }
 
@@ -96,28 +87,18 @@ public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.refresh = refresh;
     }
 
+    private static class SmoothVh extends RecyclerView.ViewHolder{
+        public SmoothVh(View itemView) {
+            super(itemView);
+        }
+    }
+
     private static class ProgressVH extends RecyclerView.ViewHolder{
         ProgressVH(View itemView) {
             super(itemView);
         }
     }
 
-    private static class ErrorVH extends RecyclerView.ViewHolder{
-        ErrorVH(final View itemView) {
-            super(itemView);
-            // Setup the click listener
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (click_listener != null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION)
-                            click_listener.onItemErrorClick(itemView, position);
-                    }
-                }
-            });
-        }
-    }
 
     public static class OrderVH extends RecyclerView.ViewHolder{
 
@@ -153,10 +134,10 @@ public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Order order = data.get(position);
         if(order == null){
             return 0;
-        }else if (order.getName() != null){
-            return 1;
-        }else {
+        }else if(order.getId() == -1){
             return -1;
+        }else {
+            return 1;
         }
     }
 
@@ -165,15 +146,14 @@ public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         LayoutInflater inflater = LayoutInflater.from(context);
         if(viewType == 1){
-            View view = inflater.inflate(com.example.mrt.ship.R.layout.item_list_order, parent, false);
+            View view = inflater.inflate(R.layout.item_list_order, parent, false);
             return new OrderVH(view);
-        }else if (viewType == 0){
-            View view = inflater.inflate(com.example.mrt.ship.R.layout.item_progress, parent, false);
+        }else if(viewType == 0){
+            View view = inflater.inflate(R.layout.item_progress_load_more, parent, false);
             return new ProgressVH(view);
         }else {
-            View view = inflater.inflate(com.example.mrt.ship.R.layout.form_error, parent, false);
-            view.setVisibility(View.VISIBLE);
-            return new ErrorVH(view);
+            View view = inflater.inflate(R.layout.item_progress_receive, parent, false);
+            return new SmoothVh(view);
         }
 
     }
@@ -205,7 +185,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             // Set random color icon
             Drawable background = image_order.getBackground();
-            int[] androidColors = context.getResources().getIntArray(R.array.androidcolors);
+            int[] androidColors = context.getResources().getIntArray(R.array.colors);
             int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
             ((GradientDrawable)background).setColor(randomAndroidColor);
         }

@@ -1,24 +1,25 @@
 package com.example.mrt.ship.fragments;
 
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.mrt.ship.R;
 import com.example.mrt.ship.activities.DetailOrderActivity;
 import com.example.mrt.ship.activities.ScheduleWayActivity;
 import com.example.mrt.ship.adapters.ReceivedAdapter;
@@ -32,6 +33,9 @@ import com.example.mrt.ship.preferences.SpacesItemDecoration;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,29 +46,22 @@ import retrofit2.Response;
 
 public class ReceivedOrdersFragment extends Fragment {
 
-    private RecyclerView receivedList;
-    private ProgressBar progressBar;
-    private ProgressBar task;
-    private View errorForm;
-    private String token;
-    private TextView plan;
+    @BindView(R.id.list) RecyclerView receivedList;
+    @BindView(R.id.error) View errorForm;
+    @BindView(R.id.progress_task) ProgressBar task;
+    @BindView(R.id.plan) TextView plan;
+    @BindView(R.id.progress) ProgressBar progressBar;
 
     private List<Order> data;
     private ReceivedAdapter adapter;
     private OnFragmentReceivedListener listener;
-
-
     private Handler handler = new Handler();
     private boolean countable = false;
-
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        token = preferences.getString("token", "");
         data = new ArrayList<>();
     }
 
@@ -72,27 +69,10 @@ public class ReceivedOrdersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_received_orders, container, false);
-
-        receivedList = (RecyclerView)view.findViewById(com.example.mrt.ship.R.id.list);
-        progressBar = (ProgressBar)view.findViewById(com.example.mrt.ship.R.id.progress);
-        errorForm = view.findViewById(com.example.mrt.ship.R.id.error);
-        task = (ProgressBar)view.findViewById(com.example.mrt.ship.R.id.progress_task);
-        plan = (TextView)view.findViewById(com.example.mrt.ship.R.id.plan);
-
-        setPlan();
+        View view = inflater.inflate(R.layout.fragment_received_orders, container, false);
+        ButterKnife.bind(this, view);
 
         setList();
-
-        setError();
-
-       /* handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showProgress(true);
-                fetchData();
-            }
-        }, 350);*/
 
         return view;
     }
@@ -127,7 +107,7 @@ public class ReceivedOrdersFragment extends Fragment {
             }
         });
 
-        adapter.setOnItemClickListener(new ReceivedAdapter.OnItemClickListener() {
+       adapter.setOnItemClickListener(new ReceivedAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 Intent intent = new Intent(getActivity(), DetailOrderActivity.class);
@@ -139,25 +119,18 @@ public class ReceivedOrdersFragment extends Fragment {
         });
     }
 
-
+    @OnClick(R.id.error)
     public void setError(){
-        errorForm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showProgress(true);
-                showError(false);
-                fetchData();
-            }
-        });
+        showProgress(true);
+        showError(false);
+        fetchData();
     }
 
 
-    private void showProgress(final boolean show) {
+   private void showProgress(final boolean show) {
         if(progressBar.isShown() != show){
-            int shortAnimTime = 300;
-
             receivedList.setVisibility(show ? View.GONE : View.VISIBLE);
-            receivedList.animate().setDuration(shortAnimTime).alpha(
+            receivedList.animate().setDuration(300).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -166,7 +139,7 @@ public class ReceivedOrdersFragment extends Fragment {
             });
 
             progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressBar.animate().setDuration(shortAnimTime).alpha(
+            progressBar.animate().setDuration(300).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -177,7 +150,7 @@ public class ReceivedOrdersFragment extends Fragment {
     }
 
 
-    public void showError(boolean show){
+   public void showError(boolean show){
         errorForm.setVisibility(show?View.VISIBLE:View.GONE);
         errorForm.animate().alpha(show?1:0).setDuration(300);
     }
@@ -188,26 +161,25 @@ public class ReceivedOrdersFragment extends Fragment {
         call.enqueue(new Callback<List<Order>>() {
             @Override
             public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
-                data = response.body();
+                List<Order> new_data = new ArrayList<>();
+
                 if(response.code() != 200){
                     showError(true);
                 }else {
-                    if(data != null){
+                    if(response.body() != null){
 
-                        if(countable){
-                            listener.countOrders(data.size(), 1, countable);
-                        }
+                        new_data.addAll(response.body());
+                        adapter.swapItems(new_data);
 
-                        task.setMax(data.size());
-                        adapter.swapItems(data);
+                        listener.countOrders(data.size(), 1, countable);
+                        updateTask();
 
-                        handler.postDelayed(new Runnable() {
+                       handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 showProgress(false);
                             }
                         }, 300);
-
                     }
                 }
             }
@@ -220,45 +192,68 @@ public class ReceivedOrdersFragment extends Fragment {
     }
 
 
-    public void setPlan(){
-        plan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(data.size() != 0){
-                    Intent intent = new Intent(getActivity(), ScheduleWayActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("data", (ArrayList<Order>)data);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                }
-            }
-        });
+    @OnClick(R.id.plan)
+    public void schedule(){
+        if(data.size() != 0){
+            Intent intent = new Intent(getActivity(), ScheduleWayActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("data", (ArrayList<Order>)data);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
     }
-
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
             countable = true;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showProgress(true);
-                    fetchData();
-                }
-            }, 350);
+            update();
+        }else {
+            countable = false;
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
+        fetchData();
+    }
+
+
+    public void updateTask(){
+        task.setMax(data.size());
+        int count = 0;
+        for(Order item:data){
+            if(item.getStatus() == 5){
+                count++;
+            }
+        }
+        task.setProgress(count);
+    }
+
+
+    public void update(){
+        MyApi.getInstance().getReceivedOrders(Token.share(getContext()))
+                .enqueue(new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        List<Order> new_data = response.body();
+
+                        if(new_data != null){
+                            adapter.swapItems(new_data);
+
+                            listener.countOrders(new_data.size(), 1, countable);
+
+                            updateTask();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+
+                    }
+                });
     }
 }

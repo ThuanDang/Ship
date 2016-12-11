@@ -3,16 +3,12 @@ package com.example.mrt.ship.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -24,6 +20,7 @@ import android.widget.ProgressBar;
 
 import com.example.mrt.ship.R;
 import com.example.mrt.ship.activities.DetailOrderActivity;
+import com.example.mrt.ship.activities.MainActivity;
 import com.example.mrt.ship.adapters.OrdersAdapter;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.interfaces.EndlessRecyclerViewScrollerListener;
@@ -49,7 +46,7 @@ import retrofit2.Response;
  * Created by mrt on 14/10/2016.
  */
 
-public class OrdersWaitingFragment extends Fragment {
+public class OrdersFragment extends Fragment {
 
     @BindView(R.id.refresh) SwipeRefreshLayout refresh;
     @BindView(R.id.list) RecyclerView orders;
@@ -76,7 +73,7 @@ public class OrdersWaitingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_orders, container, false);
+        View view = inflater.inflate(R.layout.fragment_orders, container, false);
         ButterKnife.bind(this, view);
 
         setList();
@@ -154,31 +151,25 @@ public class OrdersWaitingFragment extends Fragment {
                             status = response.code();
                             result = response.body();
 
-                            if(status != 200){
-                                // remove progress bar and add error
-                                adapterData.remove(position);
-                                adapter.notifyItemRemoved(position);
-                                adapterData.add(new Order());
-                                adapter.notifyItemInserted(position);
-                            }
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // remove progress bar
+                                    adapterData.remove(position);
+                                    adapter.notifyItemRemoved(position);
 
-                            else if(result != null){
-                                // remove progress bar
-                                adapter.getData().remove(adapterData.size() - 1);
-                                adapter.notifyItemRemoved(adapter.getData().size());
-                                // notify data change
-                                data.addAll(result.getData());
-                                adapter.swapItems(data);
-                            }
+                                    if(result != null){
+                                        // notify data change
+                                        data.addAll(result.getData());
+                                        adapter.swapItems(data);
+                                    }
+                                }
+                            }, 250);
                         }
 
                         @Override
                         public void onFailure(Call<Result> call, Throwable t) {
-                            // remove progress bar and add error
-                            adapterData.remove(adapterData.size() - 1);
-                            adapter.notifyItemRemoved(adapter.getData().size());
-                            adapterData.add(new Order());
-                            adapter.notifyItemInserted(adapterData.size() - 1);
+                            showError(true);
                         }
                     });
                 }
@@ -195,47 +186,72 @@ public class OrdersWaitingFragment extends Fragment {
                 bundle.putParcelable("order", adapter.getData().get(position));
                 intent.putExtras(bundle);
                 startActivity(intent);
-
-            }
-
-            @Override
-            public void onItemErrorClick(View itemView, int position) {
-                adapter.getData().remove(position);
-                adapter.notifyItemRemoved(position);
-                endlessListener.onLoadMore(position);
             }
         });
 
         adapter.setOnItemSwipedListener(new OrdersAdapter.OnItemSwipedListener() {
             @Override
             public void onSwiped(final int position, int direction) {
-                Call<Void> call = MyApi.getInstance().receiveOrder(Token.share(getContext()),
-                        adapter.getData().get(position).getId());
-                call.enqueue(new Callback<Void>() {
-                    int status;
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        status = response.code();
-                        if(status != 200){
-                            DialogUtil.conflictReceiveOrder(getContext(), new DialogUtil.Callback() {
-                                @Override
-                                public void onPositiveButtonClick() {
-                                    fetchData();
-                                }
-                            });
-                            adapter.notifyItemChanged(position);
-                        }else {
-                            adapter.getData().remove(position);
-                            adapter.notifyItemRemoved(position);
-                            fetchData();
-                        }
-                    }
+                Order order = adapter.getData().get(position);
+                if(order != null){
+                    Call<Void> call = MyApi.getInstance().receiveOrder(Token.share(getContext()),
+                            adapter.getData().get(position).getId());
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        DialogUtil.connectError(getContext());
-                    }
-                });
+                    // Show smooth
+                    Order smooth = new Order();
+                    smooth.setId(-1);
+                    final Order temp = adapter.getData().get(position);
+                    adapter.getData().remove(position);
+                    adapter.getData().add(position, smooth);
+                    adapter.notifyItemChanged(position);
+
+                    call.enqueue(new Callback<Void>() {
+                        int status;
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            status = response.code();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Hide smooth
+                                    adapter.getData().remove(position);
+                                    adapter.notifyItemRemoved(position);
+
+                                    if(status == 200){
+                                        DialogUtil.receiveSuccess(getContext());
+                                        fetchData();
+                                    }else{
+                                        adapter.getData().add(position, temp);
+                                        adapter.notifyItemInserted(position);
+
+                                        if(status == 404){
+                                            DialogUtil.conflictReceiveOrder(getContext(), new DialogUtil.Callback() {
+                                                @Override
+                                                public void onPositiveButtonClick() {
+                                                    fetchData();
+                                                }
+                                            });
+
+                                        }else if(status == 402){
+                                            DialogUtil.notEnoughMoney(getContext());
+                                            adapter.notifyItemChanged(position);
+                                        }else {
+                                            DialogUtil.connectError(getContext());
+                                            adapter.notifyItemChanged(position);
+                                        }
+                                    }
+                                }
+                            }, 400);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            adapter.getData().add(position, temp);
+                            adapter.notifyItemInserted(position);
+                            DialogUtil.connectError(getContext());
+                        }
+                    });
+                }
             }
         });
     }
@@ -271,7 +287,7 @@ public class OrdersWaitingFragment extends Fragment {
             }
         });
         // Configure the refreshing colors
-        refresh.setColorSchemeResources(com.example.mrt.ship.R.color.colorPrimaryDark,
+        refresh.setColorSchemeResources(R.color.colorPrimaryDark,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -351,5 +367,6 @@ public class OrdersWaitingFragment extends Fragment {
             }
         });
     }
+
 
 }

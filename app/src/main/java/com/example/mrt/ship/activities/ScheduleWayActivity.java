@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.mrt.ship.R;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.models.maps.DirectionResults;
 import com.example.mrt.ship.models.maps.DistanceMatrix;
@@ -68,7 +69,7 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onClick(View view) {
                 index++;
-                if(index < path.getList().size() && map != null){
+                if(path!= null && map != null && index < path.getList().size() ){
                     MapUtil.moveMarker(ScheduleWayActivity.this, map, myMarker,
                             path.getList().get(index), false);
                 }
@@ -77,7 +78,7 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
 
 
         SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(com.example.mrt.ship.R.id.map);
+                .findFragmentById(R.id.map);
         fragment.getMapAsync(this);
     }
 
@@ -101,7 +102,6 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
             public void onMyLocationChange(android.location.Location location) {
 
                 if(start){
-
                     origins = location.getLatitude() + "," + location.getLongitude() + "|"
                             + origins.substring(0, origins.length() - 1);
                     String url = MapApi.baseDistanceMatrix
@@ -135,6 +135,11 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
                     if(matrix.getRows().size() != 0){
                         PDTSP f = new PDTSP(P, D, matrix);
                         H = f.solve();
+
+                        for (String h:H){
+                            Log.d("test", "onResponse: " + H);
+                        }
+
 
                         MapUtil.addMarkerPickupAndDelivery(map, H, origins, data);
 

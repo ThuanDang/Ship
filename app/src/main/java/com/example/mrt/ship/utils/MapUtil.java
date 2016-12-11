@@ -14,6 +14,7 @@ import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.example.mrt.ship.R;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.models.maps.DirectionResults;
 import com.example.mrt.ship.models.maps.Leg;
@@ -189,7 +190,7 @@ public class MapUtil {
                                   final boolean hideMarker) {
 
         // Path
-        int[] androidColors = context.getResources().getIntArray(com.example.mrt.ship.R.array.androidcolors);
+        int[] androidColors = context.getResources().getIntArray(R.array.colors);
         final int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
         PolylineOptions polylineOptions = new PolylineOptions().width(10).color(randomAndroidColor);
         final Polyline polyLine = map.addPolyline(polylineOptions);

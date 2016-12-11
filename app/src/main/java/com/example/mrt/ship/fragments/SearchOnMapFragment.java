@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.mrt.ship.R;
-import com.example.mrt.ship.adapters.CustomWindowAdapter;
+import com.example.mrt.ship.activities.MainActivity;
 import com.example.mrt.ship.interfaces.OnFragmentMapListener;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.models.WareHouse;
@@ -89,7 +88,7 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_search_on_map, container, false);
+            view = inflater.inflate(R.layout.fragment_search_on_map, container, false);
         }
 
         SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager()
@@ -134,8 +133,6 @@ public class SearchOnMapFragment extends Fragment implements OnMapReadyCallback,
         LatLng HUST = new LatLng(21.005744, 105.843348);
         CameraUpdate init = CameraUpdateFactory.newLatLngZoom(HUST, 13);
         map.moveCamera(init);
-
-        //map.setInfoWindowAdapter(new CustomWindowAdapter(getActivity().getLayoutInflater()));
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED

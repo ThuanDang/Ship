@@ -97,18 +97,19 @@
         </LinearLayout>
 
     </LinearLayout>
-    <CheckBox
+
+    <ImageView
+        android:src="@drawable/ic_check_complete"
         android:id="@+id/check_completed"
+        android:visibility="invisible"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:scaleX="1.3"
-        android:scaleY="1.3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/status"
+        android:layout_marginTop="8dp"
         android:layout_below="@+id/info_order_form"
-        android:text="Chưa nhận hàng"
         android:textColor="@color/red"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

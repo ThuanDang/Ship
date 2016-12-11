@@ -32,6 +32,8 @@
     <string name="plan">Lịch trình</string>
     <string name="radius">1 km</string>
     <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="receiving">Đang nhận hàng...</string>
+    <string name="about">Nhóm project 3 thầy Ngyuyễn Bình Minh</string>
 
 
     <string-array name="svg_strings">

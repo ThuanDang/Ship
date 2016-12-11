@@ -47,7 +47,7 @@
     <item name="deepOrange400" type="color">#ff7043</item>
 
 
-    <integer-array name="androidcolors">
+    <integer-array name="colors">
         <item>@color/blue400</item>
         <item>@color/purple</item>
         <item>@color/teal400</item>
@@ -61,7 +61,6 @@
         <item>@color/green400</item>
         <item>@color/yellow700</item>
         <item>@color/red</item>
-
 
     </integer-array>
 

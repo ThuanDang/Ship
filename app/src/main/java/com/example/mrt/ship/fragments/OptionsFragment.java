@@ -3,6 +3,7 @@ package com.example.mrt.ship.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -13,48 +14,58 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.mrt.ship.R;
+import com.example.mrt.ship.activities.AboutActivity;
+import com.example.mrt.ship.activities.EventActivity;
 import com.example.mrt.ship.activities.LoginActivity;
 import com.example.mrt.ship.activities.NoteActivity;
 import com.example.mrt.ship.adapters.OptionsAdapter;
 import com.example.mrt.ship.interfaces.HideViewScrollerListener;
 import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
+import com.example.mrt.ship.models.Order;
+import com.example.mrt.ship.models.Shipper;
+import com.example.mrt.ship.networks.MyApi;
+import com.example.mrt.ship.networks.Token;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by mrt on 22/11/2016.
  */
 
 public class OptionsFragment extends Fragment{
+
+    @BindView(R.id.name) TextView name;
+    @BindView(R.id.email) TextView email;
+    @BindView(R.id.avatar) ImageView avatar;
+    @BindView(R.id.toggle_get_notifications) ToggleButton toggle_notifications;
+    @BindView(R.id.list_options) RecyclerView listOptions;
+    @BindView(R.id.rating) RatingBar rating;
+
     private OnFragmentOptionsListener mListener;
     private OptionsAdapter adapter;
-    private RecyclerView listOptions;
-    private ImageView avatar;
-    private TextView name;
-    private TextView email;
-    private ToggleButton get_notifications;
-    private SharedPreferences preferences;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-    }
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_options, container, false);
+        ButterKnife.bind(this, view);
 
-        View view = inflater.inflate(com.example.mrt.ship.R.layout.fragment_options, container, false);
-
-        listOptions = (RecyclerView)view.findViewById(com.example.mrt.ship.R.id.list_options);
         setListOptions();
-
-
+        getInfo();
         return view;
     }
 
@@ -93,21 +104,72 @@ public class OptionsFragment extends Fragment{
                 switch (position){
                     case 1: note(); break;
                     case 7: logout(); break;
+                    case 2: support(); break;
+                    case 4: share(); break;
+                    case 6: about(); break;
+                    case 0: event(); break;
                 }
             }
         });
     }
 
     public void logout(){
-        preferences.edit().remove("token").apply();
+        Token.remove(getContext());
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
-        getActivity().overridePendingTransition(com.example.mrt.ship.R.anim.right_to_left_1, com.example.mrt.ship.R.anim.right_to_left_2);
+        getActivity().overridePendingTransition(R.anim.right_to_left_1,
+                R.anim.right_to_left_2);
         getActivity().finish();
     }
 
     public void note(){
         Intent intent = new Intent(getActivity(), NoteActivity.class);
+        startActivity(intent);
+    }
+
+    public void support(){
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:123456789"));
+        startActivity(callIntent);
+    }
+
+    public void share(){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "hust.edu.vn");
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }
+
+    public void about(){
+        Intent intent = new Intent(getActivity(), AboutActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void getInfo(){
+        MyApi.getInstance().getInfo(Token.share(getContext()))
+                .enqueue(new Callback<Shipper>() {
+                    @Override
+                    public void onResponse(Call<Shipper> call, Response<Shipper> response) {
+                        Shipper shipper = response.body();
+                        if(shipper != null){
+                            name.setText(shipper.getName());
+                            email.setText(shipper.getEmail());
+                            rating.setRating(shipper.getLevel());
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Shipper> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    public void event(){
+        Intent intent = new Intent(getActivity(), EventActivity.class);
         startActivity(intent);
     }
 }
