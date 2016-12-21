@@ -161,14 +161,12 @@ public class ReceivedOrdersFragment extends Fragment {
         call.enqueue(new Callback<List<Order>>() {
             @Override
             public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
-                List<Order> new_data = new ArrayList<>();
+                List<Order> new_data = response.body();
 
                 if(response.code() != 200){
                     showError(true);
                 }else {
-                    if(response.body() != null){
-
-                        new_data.addAll(response.body());
+                    if(new_data != null){
                         adapter.swapItems(new_data);
 
                         listener.countOrders(data.size(), 1, countable);

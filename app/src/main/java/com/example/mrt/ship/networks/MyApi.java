@@ -3,7 +3,6 @@ package com.example.mrt.ship.networks;
 import com.example.mrt.ship.models.Event;
 import com.example.mrt.ship.models.Order;
 import com.example.mrt.ship.models.Shipper;
-
 import java.util.List;
 
 import retrofit2.Call;
@@ -15,6 +14,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -24,7 +24,6 @@ import retrofit2.http.Url;
 public class MyApi {
 
     private static MyApiDef instance = null;
-
 
     public static MyApiDef getInstance(){
         if(instance == null){
@@ -52,7 +51,7 @@ public class MyApi {
         Call<Result> loadMoreOrder(@Header("Authorization") String token, @Url String url);
 
         @FormUrlEncoded
-        @POST("/api/ship/login/")
+        @POST("/api/ship/login")
         Call<Token> login(@Field("email") String username,
                           @Field("password") String password);
 
@@ -103,6 +102,13 @@ public class MyApi {
 
         @GET("/api/ship/events")
         Call<Event> event(@Header("Authorization") String token);
+
+        @GET("/api/ship/find")
+        Call<List<Order>> search(@Header("Authorization") String token, @Query("key") String key);
+
+
+        @GET("/api/ship/order-detail/{id}")
+        Call<Order> getOrderDetail(@Header("Authorization") String token, @Path("id") String id);
 
     }
 }

@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -40,6 +41,10 @@ public class MapApi {
 
         @GET
         Call<DirectionResults> directAll(@Url String url);
+
+        @GET("/maps/api/directions/json")
+        Call<DirectionResults> direct(@Query("origin") String origin,
+                                      @Query("destination") String destination);
     }
 
 }

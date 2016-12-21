@@ -1,12 +1,14 @@
 package com.example.mrt.ship.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -57,14 +59,14 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.example.mrt.ship.R.layout.activity_schedule_way);
+        setContentView(R.layout.activity_schedule_way);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Lịch trình");
 
         init();
 
-        next = (Button)findViewById(com.example.mrt.ship.R.id.btn_next);
+        next = (Button)findViewById(R.id.btn_next);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,7 +122,6 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
             }
         }, 300);
 
-
     }
 
     public void getMatrix(String url){
@@ -156,7 +157,7 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
 
             @Override
             public void onFailure(Call<DistanceMatrix> call, Throwable t) {
-                Log.d("test", "onFailure: ");
+                Log.d("test", "onFailure: " + t.toString());
             }
         });
     }
@@ -202,7 +203,7 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
                         MapUtil.dropPinEffect(myMarker);
 
                         CameraPosition cameraPosition = new CameraPosition.Builder().target(myLatLng)
-                                .bearing(90f).tilt(40f).zoom(16f).build();
+                                .bearing(90f).zoom(16f).build();
                         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
 
@@ -250,6 +251,20 @@ public class ScheduleWayActivity extends AppCompatActivity implements OnMapReady
                 D.add("d" + i);
             }
         }
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                //NavUtils.navigateUpFromSameTask(this);
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

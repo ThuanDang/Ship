@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import com.example.mrt.ship.R;
 import com.example.mrt.ship.activities.AboutActivity;
 import com.example.mrt.ship.activities.EventActivity;
 import com.example.mrt.ship.activities.LoginActivity;
+import com.example.mrt.ship.activities.MainActivity;
 import com.example.mrt.ship.activities.NoteActivity;
 import com.example.mrt.ship.adapters.OptionsAdapter;
 import com.example.mrt.ship.interfaces.HideViewScrollerListener;
@@ -63,9 +65,21 @@ public class OptionsFragment extends Fragment{
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_options, container, false);
         ButterKnife.bind(this, view);
-
+        toggle_notifications.setChecked(true);
         setListOptions();
         getInfo();
+
+        toggle_notifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    MainActivity.nativePusher.subscribe("kittens");
+                }else {
+                    MainActivity.nativePusher.unsubscribe("kittens");
+                }
+
+            }
+        });
         return view;
     }
 

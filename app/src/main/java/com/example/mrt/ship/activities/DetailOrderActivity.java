@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,10 +26,14 @@ import com.example.mrt.ship.R;
 import com.example.mrt.ship.adapters.CustomWindowAdapter;
 import com.example.mrt.ship.adapters.OrdersSuggestAdapter;
 import com.example.mrt.ship.models.Order;
+import com.example.mrt.ship.models.maps.DirectionResults;
+import com.example.mrt.ship.models.maps.Path;
+import com.example.mrt.ship.networks.MapApi;
 import com.example.mrt.ship.networks.MyApi;
 import com.example.mrt.ship.networks.Token;
 import com.example.mrt.ship.preferences.FixMapFragment;
 import com.example.mrt.ship.utils.DialogUtil;
+import com.example.mrt.ship.utils.FormatUtil;
 import com.example.mrt.ship.utils.MapUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,6 +43,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,22 +103,29 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
         dataSuggest = new ArrayList<>();
         order = getIntent().getExtras().getParcelable("order");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(order.getName());
+
         ButterKnife.bind(this);
 
-        setData();
-        setButton();
-        initSuggest();
+        if(order != null){
+            getSupportActionBar().setTitle(order.getName());
+            setData();
+            setButton();
+            initSuggest();
 
-        FixMapFragment fragment = (FixMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        fragment.getMapAsync(this);
-        fragment.setListener(new FixMapFragment.OnTouchListener() {
-            @Override
-            public void onTouch() {
-                scrollView.requestDisallowInterceptTouchEvent(true);
-            }
-        });
+            FixMapFragment fragment = (FixMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            fragment.getMapAsync(this);
+            fragment.setListener(new FixMapFragment.OnTouchListener() {
+                @Override
+                public void onTouch() {
+                    scrollView.requestDisallowInterceptTouchEvent(true);
+                }
+            });
+        }else {
+            order = new Order();
+            String id = getIntent().getExtras().getString("id");
+            fetchData(id);
+        }
 
     }
 
@@ -118,7 +133,9 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
     @OnClick(R.id.btn_receive)
     public void receiveOrder() {
         smoothProgress.setVisibility(View.VISIBLE);
+        cancel_pickup_view.setVisibility(View.GONE);
         buttonReceive.setVisibility(View.GONE);
+
         MyApi.getInstance().receiveOrder(Token.share(this), order.getId())
                 .enqueue(new Callback<Void>() {
                     @Override
@@ -281,7 +298,7 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
             public void run() {
 
                 Marker delivery = googleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(order.getWare_house().getLatitude(),
+                        .position(new LatLng(order.getRecipient().getLatitude(),
                                 order.getRecipient().getLongitude()))
                         .title("Giao hàng")
                         .snippet(order.getRecipient().getAddress())
@@ -299,6 +316,13 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
                 MapUtil.dropPinEffect(pickup);
             }
         }, 500);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                direct(googleMap);
+            }
+        }, 800);
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -321,7 +345,6 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
 
 
     public void initSuggest(){
-
         adapter = new OrdersSuggestAdapter(this, dataSuggest);
         listSuggest.setAdapter(adapter);
         listSuggest.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
@@ -385,6 +408,7 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
                         if(response.body() != null){
                             adapter.swapItems(response.body());
+
                         }
                     }
 
@@ -407,5 +431,71 @@ public class DetailOrderActivity extends AppCompatActivity implements OnMapReady
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void direct(final GoogleMap map){
+        MapApi.getInstance().direct(
+                order.getWare_house().getLatitude() + "," + order.getWare_house().getLongitude(),
+                order.getRecipient().getLatitude() + "," + order.getRecipient().getLongitude())
+                .enqueue(new Callback<DirectionResults>() {
+                    @Override
+                    public void onResponse(Call<DirectionResults> call, Response<DirectionResults> response) {
+                        Log.d("test", "onResponse: " + response.body().getStatus());
+
+                        PolylineOptions polylineOptions = new PolylineOptions().width(10).color(Color.RED);
+                        final Polyline polyLine = map.addPolyline(polylineOptions);
+
+                        Path path = MapUtil.getPath(response.body());
+                        if(path.getList().size() > 0){
+                            for(int i = 0; i < path.getList().size(); i++){
+                                polyLine.setPoints(path.getList().get(i));
+                            }
+
+
+
+                            duration.setText(FormatUtil.timeConvert((int)path.getDuration()));
+                            distance.setText(String.format("%s km", path.getDistance() / 1000));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionResults> call, Throwable t) {
+                        Log.d("test", "onFailure: " + t.toString());
+                    }
+                });
+    }
+
+
+    public void fetchData(String id){
+        MyApi.getInstance().getOrderDetail(Token.share(this), id)
+                .enqueue(new Callback<Order>() {
+                    @Override
+                    public void onResponse(Call<Order> call, Response<Order> response) {
+                        if(response.code() == 200){
+                            order = response.body();
+                            getSupportActionBar().setTitle(order.getName());
+                            setData();
+                            setButton();
+                            initSuggest();
+
+
+                            FixMapFragment fragment = (FixMapFragment) getSupportFragmentManager()
+                                    .findFragmentById(R.id.map);
+                            fragment.getMapAsync(DetailOrderActivity.this);
+                            fragment.setListener(new FixMapFragment.OnTouchListener() {
+                                @Override
+                                public void onTouch() {
+                                    scrollView.requestDisallowInterceptTouchEvent(true);
+                                }
+                            });
+                        }
+                    }
+
+
+                    @Override
+                    public void onFailure(Call<Order> call, Throwable t) {
+
+                    }
+                });
     }
 }

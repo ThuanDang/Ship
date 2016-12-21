@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
@@ -169,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                             AlertDialog dialog = builder.create();
                             dialog.show();
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(
-                                    getResources().getColor(com.example.mrt.ship.R.color.colorPrimary));
+                                    getResources().getColor(R.color.colorPrimary));
                         }
                     }, 250);
 
@@ -199,7 +200,8 @@ public class LoginActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(
-                        getResources().getColor(com.example.mrt.ship.R.color.colorPrimary));
+                        getResources().getColor(R.color.colorPrimary));
+                Log.d("test", "onFailure: " + t.toString());
             }
         });
 

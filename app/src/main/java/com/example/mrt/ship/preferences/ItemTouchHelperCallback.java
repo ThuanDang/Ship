@@ -36,7 +36,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         this.swipe = swipe;
         if(swipe){
             p = new Paint();
-            p.setARGB(255, 244, 67, 54);
+            p.setARGB(255, 121, 85, 72);
         }
 
     }

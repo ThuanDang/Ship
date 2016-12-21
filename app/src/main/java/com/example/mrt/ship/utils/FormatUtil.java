@@ -34,4 +34,12 @@ public class FormatUtil {
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(nfdNormalizedString).replaceAll("");
     }
+
+    public static String timeConvert(int totalSecs){
+        int hours = totalSecs / 3600;
+        int minutes = (totalSecs % 3600) / 60;
+        int seconds = totalSecs % 60;
+
+        return String.format("%sh : %sm : %ss", hours, minutes, seconds);
+    }
 }

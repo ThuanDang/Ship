@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
  */
 public class Token {
     private String token;
+
     private static SharedPreferences preferences;
 
     public String getToken() {
@@ -26,12 +27,6 @@ public class Token {
         return preferences.getString("token", "");
     }
 
-    public static void save(Context context, String token){
-        if(preferences == null){
-            preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        }
-        preferences.edit().putString("token", "Bearer " + token).apply();
-    }
 
     public static void remove(Context context){
         if(preferences == null){

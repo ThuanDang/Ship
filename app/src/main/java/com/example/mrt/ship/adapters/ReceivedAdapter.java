@@ -147,8 +147,6 @@ public class ReceivedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.data.clear();
         this.data.addAll(orders);
 
-        Log.d("test", "swapItems: ");
-
         diffResult.dispatchUpdatesTo(this); // calls adapter's notify methods after diff is computed
     }
 

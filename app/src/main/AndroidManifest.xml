@@ -60,8 +60,9 @@
             android:theme="@style/AppTheme.NoActionBar.ColorAccent" />
         <activity android:name=".activities.AboutActivity" />
         <activity android:name=".activities.HistoryActivity" />
-        <activity android:name=".activities.EventActivity"></activity>
-        <activity android:name=".activities.ScheduleWayActivity"/>
+        <activity android:name=".activities.EventActivity" />
+        <activity android:name=".activities.ScheduleWayActivity" />
+        <activity android:name=".activities.DirectionActivity"></activity>
     </application>
 
 </manifest>

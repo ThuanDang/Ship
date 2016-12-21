@@ -60,7 +60,12 @@ public class DialogUtil {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Nhận đơn hàng thành công!");
         builder.setIcon(R.drawable.ic_checked);
-        builder.setMessage("");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
         builder.show();
     }
 
@@ -70,6 +75,12 @@ public class DialogUtil {
         builder.setTitle("Bạn không đủ tiền!");
         builder.setIcon(R.drawable.ic_crying);
         builder.setMessage("Rất tiếc tài khoản của bạn không đủ để nhận đơn hàng này.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
         builder.show();
     }
 
@@ -78,7 +89,12 @@ public class DialogUtil {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Vui lòng xác nhận lại mật khẩu!");
         builder.setIcon(R.drawable.ic_mark);
-        builder.setMessage("");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
         builder.show();
     }
 
@@ -107,6 +123,12 @@ public class DialogUtil {
         builder.setMessage("Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. " +
                 "Đăng nhập ngay để dễ dàng kiếm thêm thu nhập.");
         builder.setIcon(R.drawable.ic_checked);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -115,8 +137,13 @@ public class DialogUtil {
     public static void cancelOrderSuccess(Context context){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Hủy đơn hàng thành công");
-        builder.setMessage("");
         builder.setIcon(R.drawable.ic_checked);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }

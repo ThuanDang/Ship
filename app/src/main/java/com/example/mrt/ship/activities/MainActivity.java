@@ -28,6 +28,7 @@ import com.example.mrt.ship.interfaces.OnFragmentMapListener;
 import com.example.mrt.ship.interfaces.OnFragmentOptionsListener;
 import com.example.mrt.ship.interfaces.OnFragmentOrdersListener;
 import com.example.mrt.ship.interfaces.OnFragmentReceivedListener;
+import com.example.mrt.ship.networks.Token;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.messaging.RemoteMessage;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements
             "Đơn hàng quanh đây", "Tùy chọn"};
     private String[] counts = {"", "", "", ""};
     private Handler handler = new Handler();
-    public static boolean oneCount = true;
+    public static PushNotificationRegistration nativePusher;
 
 
     @BindView(R.id.tab_layout_form) View tabLayoutForm;
@@ -72,18 +73,6 @@ public class MainActivity extends AppCompatActivity implements
 
         // Tab and viewpager
         setTabToViewPager();
-
-        final Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    viewPager.setCurrentItem(bundle.getInt("page"));
-                }
-            }, 500);
-
-        }
 
         setFCM();
 
@@ -173,13 +162,10 @@ public class MainActivity extends AppCompatActivity implements
     public void countOrders(int n, int page, boolean countable) {
         String total = String.valueOf(n);
 
-        if(oneCount){
-
-            if(!total.equals(counts[page]) && countable){
-                count.setText(total);
-            }
-
+        if(!total.equals(counts[page]) && countable){
+            count.setText(total);
         }
+
         counts[page] = total;
     }
 
@@ -215,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements
     public void setFCM(){
         if (playServicesAvailable()) {
             PusherAndroid pusher = new PusherAndroid("72f8c2eed83c7dd0f357");
-            PushNotificationRegistration nativePusher = pusher.nativePusher();
+            nativePusher = pusher.nativePusher();
             try {
                 nativePusher.registerFCM(this);
             } catch (ManifestValidator.InvalidManifestException e) {
@@ -247,9 +233,9 @@ public class MainActivity extends AppCompatActivity implements
 
     public void showNotification(RemoteMessage remoteMessage){
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, DetailOrderActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putInt("page", 1);
+        bundle.putString("id", remoteMessage.getData().get("id"));
         intent.putExtras(bundle);
         //unique requestID to differentiate between various notification with same NotifId
         int requestID = (int) System.currentTimeMillis();
@@ -275,6 +261,8 @@ public class MainActivity extends AppCompatActivity implements
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(requestID, builder.build());
+
+        finish();
 
     }
 

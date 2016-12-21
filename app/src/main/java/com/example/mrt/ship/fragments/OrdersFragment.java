@@ -364,6 +364,7 @@ public class OrdersFragment extends Fragment {
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
                 showError(true);
+                Log.d("test", "onFailure: " + t.toString());
             }
         });
     }

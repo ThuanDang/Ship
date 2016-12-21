@@ -22,8 +22,11 @@ import com.example.mrt.ship.models.maps.Path;
 import com.example.mrt.ship.models.maps.Route;
 import com.example.mrt.ship.models.maps.RouteDecode;
 import com.example.mrt.ship.models.maps.Step;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -164,22 +167,22 @@ public class MapUtil {
             String type = H.get(i).substring(0,1);
             if(type.equals("p")){
 
-                Marker pMarker = map.addMarker(new MarkerOptions()
+                map.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title("Lấy hàng đơn hàng " + (index + 1)/2)
                         .snippet(data.get((index + 1)/2 - 1).getWare_house().getAddress())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 );
-                //MapUtil.dropPinEffect(pMarker);
+
 
             }else {
-                Marker dMarker = map.addMarker(new MarkerOptions()
+                map.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title("Giao đơn hàng " + (index/2))
                         .snippet(data.get(index/2 - 1).getRecipient().getAddress())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                 );
-                //MapUtil.dropPinEffect(dMarker);
+
             }
         }
     }
@@ -197,7 +200,7 @@ public class MapUtil {
 
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
-        final long duration = 30000;
+        final long duration = 3000;
 
         final Interpolator interpolator = new LinearInterpolator();
 
@@ -214,6 +217,7 @@ public class MapUtil {
                 if (i < directionPoint.size()){
                     LatLng latLng = directionPoint.get(i);
                     marker.setPosition(latLng);
+                    map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 160, null);
 
                     //update polyline
                     List<LatLng> points = polyLine.getPoints();
@@ -223,9 +227,9 @@ public class MapUtil {
 
                 i++;
 
-                if (t > 0.0 && i < directionPoint.size()) {
+                if (t > 0.0 || i < directionPoint.size()) {
                     // Post again 16ms later.
-                    handler.postDelayed(this, 20);
+                    handler.postDelayed(this, 150);
                 } else {
 
                     if (hideMarker) {
@@ -233,6 +237,7 @@ public class MapUtil {
                     } else {
                         marker.setVisible(true);
                     }
+
                 }
             }
         });
@@ -297,6 +302,44 @@ public class MapUtil {
             e.printStackTrace();
             return "";
         }
+    }
+
+
+    public static List<List<LatLng>> getMutilRoute(DirectionResults directionResults){
+        List<List<LatLng>> list = new ArrayList<>();
+
+        if(directionResults.getRoutes().size()>0){
+            for(int i = 0; i < directionResults.getRoutes().size(); i++){
+                // default route index is 0
+                Route route = directionResults.getRoutes().get(i);
+
+                if(route.getLegs().size()>0){
+                        Leg leg = route.getLegs().get(0);
+                        ArrayList<LatLng> routeList = new ArrayList<>();
+
+                        // steps
+                        ArrayList<Step> steps = leg.getSteps();
+                        Location location;
+                        String polyline;
+                        for(Step step:steps){
+                            location =step.getStart_location();
+                            routeList.add(new LatLng(location.getLat(), location.getLng()));
+
+                            polyline = step.getPolyline().getPoints();
+                            ArrayList<LatLng> decodeList = RouteDecode.decodePoly(polyline);
+                            routeList.addAll(decodeList);
+
+                            location =step.getEnd_location();
+                            routeList.add(new LatLng(location.getLat() ,location.getLng()));
+                        }
+
+                        list.add(routeList);
+                }
+            }
+
+        }
+
+        return list;
     }
 
 }
